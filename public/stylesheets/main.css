@@ -10,3 +10,13 @@ h3 {
 #main_content {
     align-content: center;
 }
+
+.board {
+    font-size: large;
+    font-weight: bolder;
+}
+
+.square {
+    padding: 5%;
+    text-align: center;
+}
