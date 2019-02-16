@@ -50,7 +50,14 @@ let p_move = function (row, col) {
 	cell.text(player);
 
 	turn = false;
-	$.post('ttt/move', JSON.stringify(game), c_move, 'json');
+	$.ajax({
+		url: '/ttt/move',
+		type: 'POST',
+		data: JSON.stringify(game),
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json',
+		success: c_move
+	});
 	console.log(game.grid)
 };
 
