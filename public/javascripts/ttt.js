@@ -30,7 +30,7 @@ let check_win = function () {
 };
 
 let c_move = function (res) {
-	game = JSON.parse(res);
+	game = res;
 	for (let row = 0; row < 3; row++) {
 		for (let col = 0; col < 3; col++) {
 			let cell = $("#row-" + row).find(".c-" + col);
