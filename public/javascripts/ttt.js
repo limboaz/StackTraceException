@@ -76,7 +76,15 @@ let load_game = function (res) {
 
 $(document).ready(function(){
 	$(".submit").click(function(){
-		$.post("/ttt/", $(".input").val(), load_game, 'text');
+		var n = {name: $(".input").val()};
+		$.ajax({
+			url: '/ttt/',
+			type: 'POST',
+			data: JSON.stringify(n),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'text',
+			success: load_game
+		});
 		return false;
 	})
 });
