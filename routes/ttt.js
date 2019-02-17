@@ -1,18 +1,23 @@
 var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
 
-var __dir = '../public';
+var bodyParser = require('body-parser');
+var app = express.Router();
+
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
+var __dir = 'public';
+
 /* GET home page. */
 app.get('/', function(req, res, next) {
-    res.sendFile('public/index.html', {root : __dirname + "/../"});
-
+    res.sendFile('index.html', {root: __dir});
 });
 
-app.post('/', urlencodedParser, function(req, res) {
+app.get('/play', function(req, res, next) {
+	res.sendFile('play.html', {root : __dir});
+});
+
+app.post('/', function(req, res) {
     var user_name = req.body.name;
     var date = new Date();
     var currentDate = date.getDate();
@@ -22,7 +27,7 @@ app.post('/', urlencodedParser, function(req, res) {
     res.send("Hello " + user_name + ", " + dateStr);
 });
 
-app.get('/play', /(javascripts)|(stylesheets)/, function(req, res, next) {
+app.get(/(javascripts)|(stylesheets)/, function(req, res, next) {
     res.sendFile(req.path, { root:  __dir});
 });
 
