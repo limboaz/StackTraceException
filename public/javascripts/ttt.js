@@ -51,7 +51,7 @@ let p_move = function (row, col) {
 
 	turn = false;
 	$.ajax({
-		url: '/ttt/move',
+		url: '/ttt/play',
 		type: 'POST',
 		data: JSON.stringify(game),
 		contentType: 'application/json; charset=utf-8',
@@ -61,8 +61,9 @@ let p_move = function (row, col) {
 	console.log(game.grid)
 };
 
-let load_game = function () {
+let load_game = function (res) {
 	let board = $(".board");
+	board.text(res);
 	for (let i = 0; i < 3; i++) {
 		let cl = i !== 2 ? "border-bottom border-dark" : "";
 		board.append("<div class='row " + cl + "' id='row-" + i + "'></div>");
@@ -74,4 +75,8 @@ let load_game = function () {
 	}
 };
 
-$(document).ready(load_game);
+$(document).ready(function(){
+	$(".submit").click(function(){
+		$.post("/ttt/", $(".input").val(), load_game);
+	})
+});
