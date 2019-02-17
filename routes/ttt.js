@@ -15,6 +15,10 @@ app.get('/play', function(req, res, next) {
 app.post('/move', function (req, res) {
     var data = req.body;   //array
     var changed = false;
+
+    if (data.winner === 'O') {
+        res.json(data);return;
+    }
     //check if there's a space to put a new checker
     for(var i = 0; i < data.grid.length; i++){
         if (data.grid[i] === " "){
