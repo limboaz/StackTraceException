@@ -7,12 +7,8 @@ app.get('/', function(req, res, next) {
     res.sendFile('index.html', {root: __dir});
 });
 
-app.get('/play', function(req, res, next) {
-	res.sendFile('play.html', {root : __dir});
-});
-
 //when user makes a move
-app.post('/move', function (req, res) {
+app.post('/play', function (req, res) {
     var data = req.body;   //array
     var changed = false;
 

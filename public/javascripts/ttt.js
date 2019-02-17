@@ -58,7 +58,6 @@ let p_move = function (row, col) {
 		dataType: 'json',
 		success: c_move
 	});
-	console.log(game.grid)
 };
 
 let load_game = function (res) {
@@ -77,6 +76,7 @@ let load_game = function (res) {
 
 $(document).ready(function(){
 	$(".submit").click(function(){
-		$.post("/ttt/", $(".input").val(), load_game);
+		$.post("/ttt/", $(".input").val(), load_game, 'text');
+		return false;
 	})
 });
