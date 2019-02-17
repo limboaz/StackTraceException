@@ -1,17 +1,17 @@
 var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-
-var jsonParser = bodyParser.json();
-
-var urlencodedParser = bodyParser.urlencoded({extended: false});
+var app = express.Router();
+var __dir = 'public';
 
 /* GET home page. */
 app.get('/', function(req, res, next) {
-    res.send('at ttt now');
+    res.sendFile('index.html', {root: __dir});
 });
 
-app.post('/', urlencodedParser, function(req, res) {
+app.get('/play', function(req, res, next) {
+	res.sendFile('play.html', {root : __dir});
+});
+
+app.post('/', function(req, res) {
     var user_name = req.body.name;
     var date = new Date();
     var currentDate = date.getDate();
@@ -21,5 +21,8 @@ app.post('/', urlencodedParser, function(req, res) {
     res.send("Hello " + user_name + ", " + dateStr);
 });
 
+app.get(/(javascripts)|(stylesheets)/, function(req, res, next) {
+	res.sendFile(req.path, { root:  __dir});
+});
 
 module.exports = app;
