@@ -1,13 +1,5 @@
 var express = require('express');
-
-var bodyParser = require('body-parser');
 var app = express.Router();
-
-app.use( bodyParser.json() );
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-    extended: true
-}));
-
 var __dir = 'public';
 
 /* GET home page. */
@@ -32,7 +24,9 @@ app.post('/move', function (req, res) {
     if (changed === false){ //no place found
         data.winner = " ";
         res.json(data);
+        return;
     }
+
     changed = false;    //reset changed back to false
     while (changed !== true){
         var ranIndex = Math.floor(Math.random() * Math.floor(9));

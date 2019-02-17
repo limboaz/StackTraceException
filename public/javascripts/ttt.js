@@ -37,7 +37,6 @@ let c_move = function (res) {
 			cell.text(game.grid[3 * row + col])
 		}
 	}
-	check_win(client);
 	check_win("X");
 	turn = true;
 };
@@ -46,7 +45,6 @@ let p_move = function (row, col) {
 	if (game.grid[3 * row + col] !== ' ' || !turn || game.winner !== '') return;
 	game.grid[3 * row + col] = client;
 	check_win(client);
-	check_win("X");
 
 	let cell = $("#row-" + row).find(".c-" + col);
 	cell.text(client);
@@ -65,8 +63,6 @@ let p_move = function (row, col) {
 
 let load_game = function () {
 	let board = $(".board");
-	board.append("what's up");
-	console.log("hello");
 	for (let i = 0; i < 3; i++) {
 		let cl = i !== 2 ? "border-bottom border-dark" : "";
 		board.append("<div class='row " + cl + "' id='row-" + i + "'></div>");
@@ -76,7 +72,6 @@ let load_game = function () {
 			row.append("<div class='square col " + cl + " c-" + j + "' onclick='p_move(" + i + ", " + j + ")'></div>")
 		}
 	}
-	console.log("hello")
 };
 
 $(document).ready(load_game);
