@@ -1,4 +1,4 @@
-let player = 'O';
+let client = 'O';
 let turn = true;
 
 let game = {
@@ -6,7 +6,7 @@ let game = {
 	winner: ''
 };
 
-let check_win = function () {
+let check_win = function (player) {
 	if (game.winner !== '') return;
 	let inARow = 0, inACol = 0, diag = 0, rdiag = 0;
 
@@ -37,17 +37,19 @@ let c_move = function (res) {
 			cell.text(game.grid[3 * row + col])
 		}
 	}
-	check_win();
+	check_win(client);
+	check_win("X");
 	turn = true;
 };
 
 let p_move = function (row, col) {
 	if (game.grid[3 * row + col] !== ' ' || !turn || game.winner !== '') return;
-	game.grid[3 * row + col] = player;
-	check_win();
+	game.grid[3 * row + col] = client;
+	check_win(client);
+	check_win("X");
 
 	let cell = $("#row-" + row).find(".c-" + col);
-	cell.text(player);
+	cell.text(client);
 
 	turn = false;
 	$.ajax({
