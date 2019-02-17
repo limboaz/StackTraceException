@@ -2,13 +2,14 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 
+var __dir = '../public';
 var jsonParser = bodyParser.json();
-
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 /* GET home page. */
 app.get('/', function(req, res, next) {
-    res.send('at ttt now');
+    res.sendFile('public/index.html', {root : __dirname + "/../"});
+
 });
 
 app.post('/', urlencodedParser, function(req, res) {
@@ -21,5 +22,8 @@ app.post('/', urlencodedParser, function(req, res) {
     res.send("Hello " + user_name + ", " + dateStr);
 });
 
+app.get('/play', /(javascripts)|(stylesheets)/, function(req, res, next) {
+    res.sendFile(req.path, { root:  __dir});
+});
 
 module.exports = app;
