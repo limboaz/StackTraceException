@@ -60,9 +60,8 @@ let p_move = function (row, col) {
 	});
 };
 
-let load_game = function (res) {
+let load_game = function () {
 	let board = $(".board");
-	board.text(res);
 	for (let i = 0; i < 3; i++) {
 		let cl = i !== 2 ? "border-bottom border-dark" : "";
 		board.append("<div class='row " + cl + "' id='row-" + i + "'></div>");
@@ -74,17 +73,4 @@ let load_game = function (res) {
 	}
 };
 
-$(document).ready(function(){
-	$(".submit").click(function(){
-		var n = {name: $(".input").val()};
-		$.ajax({
-			url: '/ttt/',
-			type: 'POST',
-			data: JSON.stringify(n),
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'text',
-			success: load_game
-		});
-		return false;
-	})
-});
+$(document).ready(load_game);

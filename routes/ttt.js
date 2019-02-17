@@ -45,7 +45,8 @@ app.post('/', function(req, res) {
     var currentMonth = date.getMonth();
     var currentYear = date.getFullYear();
     var dateStr = ((currentMonth + 1) + "/" + currentDate + "/" + currentYear);
-    res.send("Hello " + user_name + ", " + dateStr);
+    var ret = "Hello " + user_name + ", " + dateStr;
+	res.render('play', {message: ret});
 });
 
 app.get(/(javascripts)|(stylesheets)/, function(req, res, next) {
