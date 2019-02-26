@@ -53,4 +53,37 @@ app.get(/(javascripts)|(stylesheets)/, function(req, res, next) {
     res.sendFile(req.path, { root:  __dir});
 });
 
+// TODO Warm Up Project 2
+app.post('/adduser', function(req, res){
+
+});
+
+app.post('/verify', function(req, res){
+
+});
+
+app.get('/verify', function(req, res){
+
+});
+
+app.post('/login', function(req, res){
+
+});
+
+app.post('/logout', function(req, res){
+
+});
+
+app.post('/listgames', function(req, res){
+
+});
+
+app.post('/getgame', function(req, res){
+
+});
+
+app.post('/getscore', function(req, res){
+
+});
+
 module.exports = app;
