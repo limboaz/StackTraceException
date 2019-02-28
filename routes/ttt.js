@@ -1,10 +1,26 @@
-var express = require('express');
-var app = express.Router();
-var __dir = 'public';
-var nodemailer = require("nodemailer");
+const express = require('express');
+const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const app = express.Router();
+const __dir = 'public';
+
+const db = mongoose.connect('mongodb://localhost:27017/ttt');
+let UserModel;
+
+db.on('open', function(){
+    const userSchema = new Schema({
+        username: {type: String, index: true},
+        password: String,
+        email: {type: String, index: true},
+        enabled: {type: String, default: "False"}
+    });
+    UserModel = mongoose.model('User', userSchema);
+});
 
 /* GET home page. */
-app.get('/', function(req, res, next) {
+app.get('/', function(req, res) {
     res.sendFile('index.html', {root: __dir});
 });
 
@@ -56,16 +72,37 @@ app.get(/(javascripts)|(stylesheets)/, function(req, res, next) {
 
 // TODO Warm Up Project 2
 app.post('/adduser', function(req, res){
-    let user = req.body; // username, password, email
-    console.log(user);
+    let user_req = req.body; // username, password, email
+    let user = new UserModel(user_req);
+
+    user.save(function(err, user){
+        if (err) return console.error(err);
+        console.log("success created user " + user.username);
+    });
+
     send_verify_mail(user.username, user.email).then(function(){
         console.log("Yay");
     });
 });
 
 app.post('/verify', function(req, res){
-    let email = req.body.email;
+    let em = req.body.email;
     let key = req.body.key;
+
+    UserModel.find({email: em}, function(err, users){
+        if (err) return console.error(err);
+        for (let i = 0; i < users.length; i++){
+            if (key === 'abracadabra') {
+                users[i].enabled = "True";
+                return;
+            }
+            if (users[i].enabled === key) {
+                users[i].enabled = "True";
+                return;
+            }
+        }
+        console.log("could not verify user");
+    });
 });
 
 app.get('/verify', function(req, res){
