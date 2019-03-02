@@ -2,7 +2,6 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
 const app = express.Router();
 const __dir = 'public';
 // Characters avaiable for key generation
@@ -177,6 +176,7 @@ app.get('/verify', function (req, res) {
     else
         res.json({status:"ERROR"});
 });
+
 
 app.post('/login', function (req, res) {
     let user = req.body; //username, password

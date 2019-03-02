@@ -1,9 +1,9 @@
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var hbs = require('express-handlebars');
 var session = require('express-session');
+var uuid = require('uuid/v4');
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var flash = require('connect-flash');
@@ -22,19 +22,24 @@ app.set('view engine', 'hbs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//handle session
-app.use(session({
-    secret: 'secret',
-    saveUninitialized: true,
-    resave: true
-}));
 
 //passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(session({
+    genid: (req) => {
+        console.log('Inside session middleware');
+        console.log(req.sessionID);
+        return uuid();
+    },
+    secret: 'keyboard cat', //meow
+    resave: false,
+    saveUninitialized: true,
+    cookie:{ secure: false }
+}));
 
 /*
 //validator
