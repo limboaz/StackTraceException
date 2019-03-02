@@ -3,17 +3,39 @@ const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const app = express.Router();
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const __dir = 'public';
-// Characters avaiable for key generation
+const passportLocalMongoose = require('passport-local-mongoose');
+// Characters available for key generation
 const az09 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
+app.use(express.urlencoded({ extended: true })); // express body-parser
 // Set up Database connection and Schemas
 mongoose.connect('mongodb://localhost:27017/ttt');
 const db = mongoose.connection;
+const passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.findOne({ username: username }, function (err, user) {
+            if (err) { return done(err); }
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            if (!user.validPassword(password)) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
+        });
+    }
+));
+
+
 let UserModel, GameModel;
+let userSchema, gameSchema;
 db.on('error', console.error.bind(console, 'error connecting to database'));
 db.once('open', function () {
-    const userSchema = new Schema({
+        userSchema = new Schema({
         username: {type: String, index: true},
         password: String,
         email: {type: String, index: true},
@@ -21,18 +43,24 @@ db.once('open', function () {
         games: [{id:Number, start_date:String}]
     });
 
-    const gameSchema = new Schema({
+        gameSchema = new Schema({
         user: {type: String, index: true},
         id: {type: Number, index: true},
         grid: [String],
         winner: String
     });
-    UserModel = mongoose.model('User', userSchema);
-    GameModel = mongoose.model('Game', gameSchema);
+        userSchema.plugin(passportLocalMongoose);
+        UserModel = mongoose.model('User', userSchema);
+        GameModel = mongoose.model('Game', gameSchema);
+        module.exports = mongoose.model('User', userSchema);
+        passport.serializeUser(UserModel.serializeUser());
+        passport.deserializeUser(UserModel.deserializeUser());
 });
+
 
 /* GET home page. */
 app.get('/', function (req, res) {
+
     res.sendFile('index.html', {root: __dir});
 });
 
@@ -177,13 +205,31 @@ app.get('/verify', function (req, res) {
         res.json({status:"ERROR"});
 });
 
+app.use(session({
+    genid: (req) => {
+        console.log('Inside session middleware');
+        console.log(req.sessionID);
+    },
+    secret: 'keyboard cat', //meow meow
+    resave: false,
+    saveUninitialized: true,
+    store: new MongoStore({mongooseConnection: db}),
+    cookie:{ secure: false }
+}));
 
-app.post('/login', function (req, res) {
-    let user = req.body; //username, password
-});
+//don't move the following statements to the top. Order matters here.
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.post('/login', passport.authenticate('local', {
+    successRedirect: '/play',
+    failureRedirect: '/login'
+}));
+
 
 app.post('/logout', function (req, res) {
-
+    req.logout();
+    res.redirect('/');
 });
 
 app.post('/listgames', function (req, res) {
