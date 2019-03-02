@@ -35,7 +35,7 @@ app.use(session({
         console.log(req.sessionID);
         return uuid();
     },
-    secret: 'keyboard cat', //meow
+    secret: 'keyboard cat', //meow meow
     resave: false,
     saveUninitialized: true,
     cookie:{ secure: false }
