@@ -3,49 +3,27 @@ let turn = true;
 
 let game = {
 	grid: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-	winner: ''
+	move: null
 };
 
-let check_win = function (player) {
-	if (game.winner !== '') return;
-	let inARow = 0, inACol = 0, diag = 0, rdiag = 0;
-
-	for (let i = 0; i < 3; i++) {
-		if (game.grid[3 * i + i] === player) diag++;
-		if (game.grid[3 * i + 2 - i] === player) rdiag++;
-
-		for (let j = 0; j < 3; j++) {
-			if (game.grid[3 * i + j] === player) inARow++;
-			if (game.grid[3 * j + i] === player) inACol++;
-
-			if (inARow === 3 || inACol === 3) {
-				game.winner = player;
-				return;
-			}
-		}
-		inACol = 0; inARow = 0;
-	}
-	if (diag === 3 || rdiag === 3)
-		game.winner = player;
-};
+let won = false;
 
 let c_move = function (res) {
-	game = res;
+	game.grid = res.grid;
+	if (res.winner !== '') won = true;
 	for (let row = 0; row < 3; row++) {
 		for (let col = 0; col < 3; col++) {
 			let cell = $("#row-" + row).find(".c-" + col);
 			cell.text(game.grid[3 * row + col])
 		}
 	}
-	check_win("X");
 	turn = true;
 };
 
 let p_move = function (row, col) {
-	if (game.grid[3 * row + col] !== ' ' || !turn || game.winner !== '') return;
+	if (game.grid[3 * row + col] !== ' ' || !turn || won) return;
 	game.grid[3 * row + col] = client;
-	check_win(client);
-
+	game.move = 3 * row + col;
 	let cell = $("#row-" + row).find(".c-" + col);
 	cell.text(client);
 
