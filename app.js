@@ -3,9 +3,6 @@ var path = require('path');
 var logger = require('morgan');
 var hbs = require('express-handlebars');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var flash = require('connect-flash');
-var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var db = mongoose.connection;
 

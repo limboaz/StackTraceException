@@ -15,22 +15,6 @@ mongoose.connect('mongodb://localhost:27017/ttt');
 const db = mongoose.connection;
 const passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 
-passport.use(new LocalStrategy(
-    function(username, password, done) {
-            UserModel.findOne({ username: username }, function(err, user) {
-                if (err) { return done(err); }
-                if (!user) {
-                    return done(null, false, { message: 'Incorrect username.' });
-                }
-                if (!user.validPassword(password)) {
-                    return done(null, false, { message: 'Incorrect password.' });
-                }
-                return done(null, user);
-            });
-        }
-));
-
-
 let UserModel, GameModel;
 let userSchema, gameSchema;
 db.on('error', console.error.bind(console, 'error connecting to database'));
@@ -49,13 +33,31 @@ db.once('open', function () {
         grid: [String],
         winner: String
     });
+        userSchema.methods.validPassword = function( pwd ) {
+        return ( this.password === pwd );
+    };
         userSchema.plugin(passportLocalMongoose);
         UserModel = mongoose.model('User', userSchema);
         GameModel = mongoose.model('Game', gameSchema);
-        module.exports = mongoose.model('User', userSchema);
         passport.serializeUser(UserModel.serializeUser());
         passport.deserializeUser(UserModel.deserializeUser());
 });
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        UserModel.findOne({ username: username }, function(err, user) {
+            if (err) { return done(err); }
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            if (!user.validPassword(password)) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
+        });
+    }
+));
+
 
 
 /* GET home page. */
