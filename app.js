@@ -2,9 +2,7 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 var hbs = require('express-handlebars');
-var session = require('express-session');
-var mongoose = require('mongoose');
-var db = mongoose.connection;
+
 
 var indexRouter = require('./routes/index');
 var tttRouter = require('./routes/ttt');
