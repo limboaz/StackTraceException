@@ -1,78 +1,62 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const app = express.Router();
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const Schema = mongoose.Schema;
+const app = express.Router();
 const __dir = 'public';
-const passportLocalMongoose = require('passport-local-mongoose');
-// Characters available for key generation
-const az09 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-app.use(express.urlencoded({ extended: true })); // express body-parser
+
 // Set up Database connection and Schemas
 mongoose.connect('mongodb://localhost:27017/ttt');
 const db = mongoose.connection;
-const passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
-
+let mongoStore = new MongoStore({mongooseConnection: db});
 let UserModel, GameModel;
-let userSchema, gameSchema;
 db.on('error', console.error.bind(console, 'error connecting to database'));
 db.once('open', function () {
-        userSchema = new Schema({
+    let userSchema = new Schema({
         username: {type: String, index: true},
         password: String,
-        email: {type: String, index: true},
+	    sid: String,
+	    email: {type: String, index: true},
         enabled: {type: String, default: "False"},
         games: [{id:Number, start_date:String}]
     });
-
-        gameSchema = new Schema({
+    let gameSchema = new Schema({
         user: {type: String, index: true},
         id: {type: Number, index: true},
         grid: [String],
         winner: String
     });
-        userSchema.methods.validPassword = function( pwd ) {
-        return ( this.password === pwd );
-    };
-        userSchema.plugin(passportLocalMongoose);
-        UserModel = mongoose.model('User', userSchema);
-        GameModel = mongoose.model('Game', gameSchema);
-        passport.serializeUser(UserModel.serializeUser());
-        passport.deserializeUser(UserModel.deserializeUser());
+    UserModel = mongoose.model('User', userSchema);
+    GameModel = mongoose.model('Game', gameSchema);
 });
 
-passport.use(new LocalStrategy(
-    function(username, password, done) {
-        UserModel.findOne({ username: username }, function(err, user) {
-            if (err) { return done(err); }
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-            if (!user.validPassword(password)) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-            return done(null, user);
-        });
-    }
-));
-
-
+app.use(session({
+    name: 'ttt',
+    secret: 'keyboard cat', //meow meow
+    resave: false,
+    saveUninitialized: false,
+    store: mongoStore,
+    cookie:{ secure: false }
+}));
 
 /* GET home page. */
 app.get('/', function (req, res) {
-
     res.sendFile('index.html', {root: __dir});
 });
 
 //when user makes a move
 // TODO Save games into database with associated user and only play if user is logged in
 app.post('/play', function (req, res) {
-    var data = req.body;   //array
+	if (!req.session.userId) return res.json({status:"ERROR"});
+	if (!req.session.grid) req.session.grid = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+
+    var data = req.body;
     var changed = false;
+
     var game = {
-        grid: data.grid,
+        grid: req.session.grid,
         winner: ''
     };
     if (data.move == null) {
@@ -80,29 +64,31 @@ app.post('/play', function (req, res) {
         return;
     }
 
+    game.grid[data.move] = 'O';
     check_win(game,'O');
-
     if (game.winner === 'O') {
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+	    req.session.grid = game.grid;
         res.json(game);
         return;
     }
     //check if there's a space to put a new checker
-    for (var i = 0; i < data.grid.length; i++) {
-        if (data.grid[i] === " ") {
+    for (var i = 0; i < game.grid.length; i++) {
+        if (game.grid[i] === " ") {
             changed = true; //at least should have one free space
         }
     }
     if (changed === false) { //no place found
         game.winner = " ";
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+	    req.session.grid = game.grid;
         res.json(game);
         return;
     }
     changed = false;    //reset changed back to false
     while (changed !== true) {
         var ranIndex = Math.floor(Math.random() * Math.floor(9));
-        if (data.grid[ranIndex] === " ") {
+        if (game.grid[ranIndex] === " ") {
             game.grid[ranIndex] = "X";
             changed = true;
         }
@@ -111,6 +97,7 @@ app.post('/play', function (req, res) {
     check_win(game, 'X');
     if (game.winner !== '')
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+    req.session.grid = game.grid;
     res.json(game);
 });
 
@@ -207,39 +194,47 @@ app.get('/verify', function (req, res) {
         res.json({status:"ERROR"});
 });
 
-app.use(session({
-    genid: (req) => {
-        console.log('Inside session middleware');
-        console.log(req.sessionID);
-    },
-    secret: 'keyboard cat', //meow meow
-    resave: false,
-    saveUninitialized: true,
-    store: new MongoStore({mongooseConnection: db}),
-    cookie:{ secure: false }
-}));
-
-//don't move the following statements to the top. Order matters here.
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/play',
-    failureRedirect: '/login'
-}));
-
+app.post('/login', function(req, res){
+    const name = req.body.username;
+    const pass = req.body.password;
+    UserModel.findOne({username: name, password: pass}, function(err, user){
+        if (err) {
+            res.json({status:"ERROR"});
+            return console.log(err);
+        }
+        if (!user) return res.json({status:"ERROR"});
+        let psid = user.sid;
+	    user.sid = req.sessionID;
+	    req.session.userId = user._id;
+        if (psid) {
+	        mongoStore.get(psid, function (err, session) {
+		        if (err) console.log(err);
+		        if (session) req.session.grid = session.grid;
+		        user.save(function(err){
+			        if (err) return console.log(err);
+			        console.log("Now saving session");
+			        mongoStore.set(req.sessionID, req.session);
+		        });
+	        });
+        }
+	    res.json({status:"OK"});
+    });
+});
 
 app.post('/logout', function (req, res) {
-    req.logout();
-    res.redirect('/');
+	if (!req.session.userId) return res.json({status:"ERROR"});
+    res.clearCookie('ttt');
+    res.json({status:"OK"});
 });
 
 app.post('/listgames', function (req, res) {
-
+	if (!req.session.userId) return res.json({status:"ERROR"});
 });
 
 //TODO Test /getgame
 app.post('/getgame', function (req, res) {
+	if (!req.session.userId) return res.json({status:"ERROR"});
+
     GameModel.find({user:user, id: req.body.id}, function(err, game){
         if (err || game.length === 0) {
             console.log(err);
@@ -250,7 +245,7 @@ app.post('/getgame', function (req, res) {
 });
 
 app.post('/getscore', function (req, res) {
-
+	if (!req.session.userId) return res.json({status:"ERROR"});
 });
 
 async function verify_user(em, key) {
@@ -271,6 +266,8 @@ async function verify_user(em, key) {
     return found;
 }
 
+// Characters available for key generation
+const az09 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 function random_key(){
     let key = "";
     for (let i = 0; i < 7; i++)
