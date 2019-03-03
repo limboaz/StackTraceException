@@ -1,13 +1,13 @@
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var hbs = require('express-handlebars');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const hbs = require('express-handlebars');
+const session = require('express-session');
 
-
-var indexRouter = require('./routes/index');
-var tttRouter = require('./routes/ttt');
-
-var app = express();
+const mongoStore = require('./mongoose');
+const indexRouter = require('./routes/index');
+const tttRouter = require('./routes/ttt');
+const app = express();
 
 app.engine('hbs', hbs({extname: 'hbs', layoutsDir: 'public'}));
 app.set('views', 'public');
@@ -16,26 +16,15 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-
-/*
-//validator
-app.use(expressValidator({
-    errorFormatter: function(param, msg, value){
-        var namespace = param.split('.')
-            , root = namespace.shift()
-            , formParam = root;
-        while(namespace.length){
-            formParam += '[' + namespace.shift() + ']';
-        }
-        return {
-            param : formParam,
-            msg : msg,
-            value : value
-        };
-    }
+app.use(session({
+	name: 'ttt',
+	secret: 'keyboard cat', //meow meow
+	resave: false,
+	saveUninitialized: false,
+	store: mongoStore,
+	cookie:{ secure: false }
 }));
-*/
+
 app.use('/', indexRouter);
 app.use('/ttt', tttRouter);
 

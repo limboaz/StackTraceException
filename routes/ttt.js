@@ -1,45 +1,10 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
-const mongoose = require('mongoose');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-const Schema = mongoose.Schema;
+const User = require('../models/user');
+const Game = require('../models/game');
+const mongoStore = require('../mongoose');
 const app = express.Router();
 const __dir = 'public';
-
-// Set up Database connection and Schemas
-mongoose.connect('mongodb://localhost:27017/ttt');
-const db = mongoose.connection;
-let mongoStore = new MongoStore({mongooseConnection: db});
-let UserModel, GameModel;
-db.on('error', console.error.bind(console, 'error connecting to database'));
-db.once('open', function () {
-    let userSchema = new Schema({
-        username: {type: String, index: true},
-        password: String,
-	    sid: String,
-	    email: {type: String, index: true},
-        enabled: {type: String, default: "False"},
-        games: [{id:Number, start_date:String}]
-    });
-    let gameSchema = new Schema({
-        user: {type: String, index: true},
-        id: {type: Number, index: true},
-        grid: [String],
-        winner: String
-    });
-    UserModel = mongoose.model('User', userSchema);
-    GameModel = mongoose.model('Game', gameSchema);
-});
-
-app.use(session({
-    name: 'ttt',
-    secret: 'keyboard cat', //meow meow
-    resave: false,
-    saveUninitialized: false,
-    store: mongoStore,
-    cookie:{ secure: false }
-}));
 
 /* GET home page. */
 app.get('/', function (req, res) {
@@ -142,7 +107,7 @@ let check_win = function (game, player) {
 // TODO potentially change email
 app.post('/adduser', function (req, res) {
     let user_req = req.body; // username, password, email
-    let user = new UserModel(user_req);
+    let user = new User(user_req);
     user.enabled = random_key();
     user.save(function (err, user) {
         if (err) return console.error(err);
@@ -197,7 +162,7 @@ app.get('/verify', function (req, res) {
 app.post('/login', function(req, res){
     const name = req.body.username;
     const pass = req.body.password;
-    UserModel.findOne({username: name, password: pass}, function(err, user){
+    User.findOne({username: name, password: pass}, function(err, user){
         if (err) {
             res.json({status:"ERROR"});
             return console.log(err);
@@ -213,7 +178,7 @@ app.post('/login', function(req, res){
 		        user.save(function(err){
 			        if (err) return console.log(err);
 			        console.log("Now saving session");
-			        mongoStore.set(req.sessionID, req.session);
+                    mongoStore.set(req.sessionID, req.session);
 		        });
 	        });
         }
@@ -235,7 +200,7 @@ app.post('/listgames', function (req, res) {
 app.post('/getgame', function (req, res) {
 	if (!req.session.userId) return res.json({status:"ERROR"});
 
-    GameModel.find({user:user, id: req.body.id}, function(err, game){
+    Game.find({user:user, id: req.body.id}, function(err, game){
         if (err || game.length === 0) {
             console.log(err);
             res.json({status:"ERROR"});
@@ -250,7 +215,7 @@ app.post('/getscore', function (req, res) {
 
 async function verify_user(em, key) {
     let found = false;
-    await UserModel.find({email: em}, function (err, users) {
+    await User.find({email: em}, function (err, users) {
         if (err) return console.error(err);
         for (let i = 0; i < users.length; i++) {
             if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
