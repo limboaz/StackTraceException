@@ -5,7 +5,6 @@ const Game = require('../models/game');
 const mongoStore = require('../mongoose');
 const app = express.Router();
 const __dir = 'public';
-
 /* GET home page. */
 app.get('/', function (req, res) {
     res.sendFile('index.html', {root: __dir});
@@ -30,10 +29,10 @@ app.post('/play', function (req, res) {
     }
 
     game.grid[data.move] = 'O';
-    check_win(game,'O');
+    check_win(req, res, game,'O');
     if (game.winner === 'O') {
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-	    req.session.grid = game.grid;
+        req.session.grid = game.grid;
         res.json(game);
         return;
     }
@@ -44,6 +43,7 @@ app.post('/play', function (req, res) {
         }
     }
     if (changed === false) { //no place found
+        storeGame(req, game, "Tie");
         game.winner = " ";
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
 	    req.session.grid = game.grid;
@@ -59,7 +59,7 @@ app.post('/play', function (req, res) {
         }
     }
 
-    check_win(game, 'X');
+    check_win(req, res, game, 'X');
     if (game.winner !== '')
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     req.session.grid = game.grid;
@@ -81,7 +81,36 @@ app.get(/(javascripts)|(stylesheets)/, function (req, res) {
     res.sendFile(req.path, {root: __dir});
 });
 
-let check_win = function (game, player) {
+let storeGame = function(req, game, player){
+    User.findById(req.session.userId, function(err, user){
+        if(err)
+            console.log(err);
+        const gameFinished = new Game({
+            user: user._id,
+            id: user.gameId + 1,
+            grid: game.grid,
+            winner: player
+        });
+        gameFinished
+            .save()
+            .then( result => {
+                console.log(result);
+            })
+            .catch(err => console.log(err));
+        user.gameId++;
+        user.games.push({"id": gameFinished.id,"start_date": new Date()});
+        if (player === 'X'){
+            user.serverscore ++;
+        }else if (player === 'O'){
+            user.humanscore ++;
+        }else if (player === 'Tie'){
+            user.ties ++;
+        }
+        user.save();
+    });
+};
+
+let check_win = function (req, res, game, player) {
     let inARow = 0, inACol = 0, diag = 0, rdiag = 0;
 
     for (let i = 0; i < 3; i++) {
@@ -93,14 +122,17 @@ let check_win = function (game, player) {
             if (game.grid[3 * j + i] === player) inACol++;
 
             if (inARow === 3 || inACol === 3) {
+                storeGame(req, game, player);
                 game.winner = player;
                 return;
             }
         }
         inACol = 0; inARow = 0;
     }
-    if (diag === 3 || rdiag === 3)
+    if (diag === 3 || rdiag === 3) {
+        storeGame(req, game, player);
         game.winner = player;
+    }
 };
 
 // TODO Warm Up Project 2
@@ -194,16 +226,20 @@ app.post('/logout', function (req, res) {
 
 app.post('/listgames', function (req, res) {
 	if (!req.session.userId) return res.json({status:"ERROR"});
+	//if the user id exists in db, retrieve all of the games associated with this user.
+    User.findById(req.session.userId, function (err, user) {
+        res.json({status: "OK", games:user.games});
+    });
 });
 
 //TODO Test /getgame
 app.post('/getgame', function (req, res) {
 	if (!req.session.userId) return res.json({status:"ERROR"});
 
-    Game.find({user:user, id: req.body.id}, function(err, game){
+    Game.find({id: req.body.id, user: req.session.userId}, function(err, game){
         if (err || game.length === 0) {
             console.log(err);
-            res.json({status:"ERROR"});
+            res.json({status:"Game invalid"});
         } else
             res.json({status:'OK', grid: game[0].grid, winner: game[0].winner});
     });
@@ -211,6 +247,9 @@ app.post('/getgame', function (req, res) {
 
 app.post('/getscore', function (req, res) {
 	if (!req.session.userId) return res.json({status:"ERROR"});
+	User.findById(req.session.userId, function(err,user){
+        res.json({status: "OK", human: user.humanscore, wopr: user.serverscore, tie: user.ties});
+    });
 });
 
 async function verify_user(em, key) {
