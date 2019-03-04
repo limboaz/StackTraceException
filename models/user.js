@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
 	games: {type: [{id:Number, start_date:String}], default: []},
 	humanscore: {type: Number, default: 0},
 	serverscore: {type: Number, default: 0},
-	ties: Number,
+	ties: {type: Number, default: 0},
 	gameId: {type: Number, default: 0}
 });
 

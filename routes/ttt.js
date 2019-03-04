@@ -5,6 +5,7 @@ const Game = require('../models/game');
 const mongoStore = require('../mongoose');
 const app = express.Router();
 const __dir = 'public';
+const client = 'O', server = 'X';
 
 /* GET home page. */
 app.get('/', function (req, res) {
@@ -29,10 +30,9 @@ app.post('/play', function (req, res) {
         return;
     }
 
-    game.grid[data.move] = 'O';
-    check_win(req, res, game,'O');
-    if (game.winner === 'O') {
-
+    game.grid[data.move] = client;
+    check_win(req, game, client);
+    if (game.winner === client) {
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
         req.session.grid = game.grid;
         res.json(game);
@@ -61,9 +61,7 @@ app.post('/play', function (req, res) {
         }
     }
 
-
-    check_win(req, res, game, 'X');
-
+    check_win(req, game, server);
     if (game.winner !== '')
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     req.session.grid = game.grid;
@@ -86,13 +84,13 @@ app.get(/(javascripts)|(stylesheets)/, function (req, res) {
 });
 
 let storeGame = function(req, game, player){
+    let grid = game.grid;
     User.findById(req.session.userId, function(err, user){
-        if(err)
-            console.log(err);
-        const gameFinished = new Game({
+        if(err) return console.log(err);
+        let gameFinished = new Game({
             user: user._id,
             id: user.gameId + 1,
-            grid: game.grid,
+            grid: grid,
             winner: player
         });
         gameFinished
@@ -103,18 +101,17 @@ let storeGame = function(req, game, player){
             .catch(err => console.log(err));
         user.gameId++;
         user.games.push({"id": gameFinished.id,"start_date": new Date()});
-        if (player === 'X'){
-            user.serverscore ++;
-        }else if (player === 'O'){
-            user.humanscore ++;
-        }else if (player === 'Tie'){
-            user.ties ++;
-        }
+        if (player === server)
+            user.serverscore++;
+        else if (player === client)
+            user.humanscore++;
+        else if (player === 'Tie')
+            user.ties++;
         user.save();
     });
 };
 
-let check_win = function (req, res, game, player) {
+let check_win = function (req, game, player) {
     let inARow = 0, inACol = 0, diag = 0, rdiag = 0;
 
     for (let i = 0; i < 3; i++) {
@@ -199,11 +196,10 @@ app.post('/login', function(req, res){
     const name = req.body.username;
     const pass = req.body.password;
     User.findOne({username: name, password: pass}, function(err, user){
-        if (err) {
+        if (err || !user) {
             res.json({status:"ERROR"});
             return console.log(err);
         }
-        if (!user) return res.json({status:"ERROR"});
         let psid = user.sid;
 	    user.sid = req.sessionID;
 	    req.session.userId = user._id;
@@ -243,7 +239,7 @@ app.post('/getgame', function (req, res) {
     Game.find({id: req.body.id, user: req.session.userId}, function(err, game){
         if (err || game.length === 0) {
             console.log(err);
-            res.json({status:"Game invalid"});
+            res.json({status:"ERROR"});
         } else
             res.json({status:'OK', grid: game[0].grid, winner: game[0].winner});
     });
