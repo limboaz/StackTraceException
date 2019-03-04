@@ -5,6 +5,7 @@ const Game = require('../models/game');
 const mongoStore = require('../mongoose');
 const app = express.Router();
 const __dir = 'public';
+const client = 'O', server = 'X';
 
 /* GET home page. */
 app.get('/', function (req, res) {
@@ -29,11 +30,11 @@ app.post('/play', function (req, res) {
         return;
     }
 
-    game.grid[data.move] = 'O';
-    check_win(game,'O');
-    if (game.winner === 'O') {
+    game.grid[data.move] = client;
+    check_win(game,client);
+    if (game.winner === client) {
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-	    req.session.grid = game.grid;
+        req.session.grid = game.grid;
         res.json(game);
         return;
     }
@@ -54,12 +55,12 @@ app.post('/play', function (req, res) {
     while (changed !== true) {
         var ranIndex = Math.floor(Math.random() * Math.floor(9));
         if (game.grid[ranIndex] === " ") {
-            game.grid[ranIndex] = "X";
+            game.grid[ranIndex] = server;
             changed = true;
         }
     }
 
-    check_win(game, 'X');
+    check_win(game, server);
     if (game.winner !== '')
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     req.session.grid = game.grid;
