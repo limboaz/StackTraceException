@@ -25,7 +25,7 @@ app.use(session({
 	cookie:{ secure: false }
 }));
 
-app.use('/', indexRouter);
+app.use('/', tttRouter);
 app.use('/ttt', tttRouter);
 
 module.exports = app;

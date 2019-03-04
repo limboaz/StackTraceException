@@ -5,7 +5,7 @@ const Game = require('../models/game');
 const mongoStore = require('../mongoose');
 const app = express.Router();
 const __dir = 'public';
-const client = 'O', server = 'X';
+const client = 'X', server = 'O';
 
 /* GET home page. */
 app.get('/', function (req, res) {
@@ -15,6 +15,7 @@ app.get('/', function (req, res) {
 //when user makes a move
 // TODO Save games into database with associated user and only play if user is logged in
 app.post('/play', function (req, res) {
+	console.log(req.body, req.session.grid);
 	if (!req.session.userId) return res.json({status:"ERROR"});
 	if (!req.session.grid) req.session.grid = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
 
@@ -23,18 +24,17 @@ app.post('/play', function (req, res) {
 
     var game = {
         grid: req.session.grid,
-        winner: ''
+        winner: undefined
     };
     if (data.move == null) {
         res.json(game);
         return;
     }
-
+    if (data.move >= 9) return res.json({status:"ERROR"});
     game.grid[data.move] = client;
     check_win(req, game, client);
     if (game.winner === client) {
-        game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-        req.session.grid = game.grid;
+        req.session.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
         res.json(game);
         return;
     }
@@ -47,8 +47,7 @@ app.post('/play', function (req, res) {
     if (changed === false) { //no place found
         storeGame(req, game, "Tie");
         game.winner = " ";
-        game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-	    req.session.grid = game.grid;
+        req.session.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
         res.json(game);
         return;
     }
@@ -62,9 +61,8 @@ app.post('/play', function (req, res) {
     }
 
     check_win(req, game, server);
-    if (game.winner !== '')
-        game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-    req.session.grid = game.grid;
+    if (game.winner === 'X')
+        req.session.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     res.json(game);
 });
 
@@ -177,10 +175,12 @@ app.post('/adduser', function (req, res) {
 app.post('/verify', function (req, res) {
     let email = req.body.email;
     let key = req.body.key;
-    if (verify_user(email, key))
-        res.json({status:"OK"});
-    else
-        res.json({status:"ERROR"});
+    verify_user(email,key).then(function(value){
+	if (value)
+	    res.json({status:"OK"});
+	else
+	    res.json({status:"ERROR"});
+    });
 });
 
 app.get('/verify', function (req, res) {
@@ -196,7 +196,7 @@ app.post('/login', function(req, res){
     const name = req.body.username;
     const pass = req.body.password;
     User.findOne({username: name, password: pass}, function(err, user){
-        if (err || !user) {
+        if (err || !user || user.enabled !== "True") {
             res.json({status:"ERROR"});
             return console.log(err);
         }
@@ -258,6 +258,7 @@ async function verify_user(em, key) {
         if (err) return console.error(err);
         for (let i = 0; i < users.length; i++) {
             if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
+		console.log(users[i]);
                 users[i].enabled = "True";
                 users[i].save(function (err, user) {
                     if (err) return console.log(err);
@@ -267,6 +268,7 @@ async function verify_user(em, key) {
             }
         }
     });
+    console.log(em, key, found);
     return found;
 }
 
