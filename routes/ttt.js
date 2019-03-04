@@ -5,6 +5,7 @@ const Game = require('../models/game');
 const mongoStore = require('../mongoose');
 const app = express.Router();
 const __dir = 'public';
+
 /* GET home page. */
 app.get('/', function (req, res) {
     res.sendFile('index.html', {root: __dir});
@@ -31,6 +32,7 @@ app.post('/play', function (req, res) {
     game.grid[data.move] = 'O';
     check_win(req, res, game,'O');
     if (game.winner === 'O') {
+
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
         req.session.grid = game.grid;
         res.json(game);
@@ -54,12 +56,14 @@ app.post('/play', function (req, res) {
     while (changed !== true) {
         var ranIndex = Math.floor(Math.random() * Math.floor(9));
         if (game.grid[ranIndex] === " ") {
-            game.grid[ranIndex] = "X";
+            game.grid[ranIndex] = server;
             changed = true;
         }
     }
 
+
     check_win(req, res, game, 'X');
+
     if (game.winner !== '')
         game.grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     req.session.grid = game.grid;
