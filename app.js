@@ -14,7 +14,7 @@ app.set('views', 'public');
 app.set('view engine', 'hbs');
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
 	name: 'ttt',
@@ -22,7 +22,7 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false,
 	store: mongoStore,
-	cookie:{ secure: false }
+	cookie: {secure: false}
 }));
 
 app.use('/', tttRouter);
