@@ -71,7 +71,7 @@ router.get('/verify', function (req, res) {
 		else
 			res.json({status: "ERROR"});
 	});
-}
+});
 
 router.post('/login', function (req, res) {
 	const name = req.body.username;
