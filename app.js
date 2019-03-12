@@ -5,8 +5,7 @@ const hbs = require('express-handlebars');
 const session = require('express-session');
 
 const mongoStore = require('./mongoose');
-const indexRouter = require('./routes/index');
-const tttRouter = require('./routes/ttt');
+const userRouter = require('./routes/user');
 const app = express();
 
 app.engine('hbs', hbs({extname: 'hbs', layoutsDir: 'public'}));
@@ -17,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-	name: 'ttt',
+	name: 'STE',
 	secret: 'keyboard cat', //meow meow
 	resave: false,
 	saveUninitialized: false,
@@ -25,7 +24,6 @@ app.use(session({
 	cookie: {secure: false}
 }));
 
-app.use('/', tttRouter);
-app.use('/ttt', tttRouter);
+app.use('/', userRouter);
 
 module.exports = app;
