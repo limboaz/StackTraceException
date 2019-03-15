@@ -20,34 +20,9 @@ router.post('/adduser', function (req, res) {
 	let user = new User(user_req);
 	user.enabled = random_key();
 	user.save(function (err, user) {
-		if (err) return console.error(err);
+		if (err) return res.json({status:"error", error: err.toString()});
 		console.log("success created user " + user.username);
-	});
-
-	let transporter = nodemailer.createTransport({
-		host: 'smtp.mail.yahoo.com',
-		port: 465,
-		service: 'yahoo',
-		secure: false,
-		auth: {
-			user: 'tictactoeppg@yahoo.com',
-			pass: 'helloppg2019'
-		}
-	});
-	let mailOptions = {
-		from: 'tictactoeppg@yahoo.com',
-		to: user.email,
-		subject: 'Verifying your Tic Tac Toe account',
-		text: 'Click on this link to verify your account http://localhost:3000/ttt/verify?email=' + user.email + "&key=" + user.enabled
-	};
-
-	transporter.sendMail(mailOptions, (error, info) => {
-		if (error) {
-			res.json({status: 'ERROR'});
-			return console.log(error);
-		}
-		console.log('Message %s sent: %s', info.messageId, info.response);
-		res.json({status: 'OK'});
+		send_email(user, res);
 	});
 });
 
@@ -104,6 +79,34 @@ router.post('/logout', function (req, res) {
 	res.clearCookie('STE');
 	res.json({status: "OK"});
 });
+
+function send_email(user, res){
+	let transporter = nodemailer.createTransport({
+		host: 'smtp.mail.yahoo.com',
+		port: 465,
+		service: 'yahoo',
+		secure: false,
+		auth: {
+			user: 'tictactoeppg@yahoo.com',
+			pass: 'helloppg2019'
+		}
+	});
+	let mailOptions = {
+		from: 'tictactoeppg@yahoo.com',
+		to: user.email,
+		subject: 'Verifying your Tic Tac Toe account',
+		text: 'Click on this link to verify your account http://localhost:3000/ttt/verify?email=' + user.email + "&key=" + user.enabled
+	};
+
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			res.json({status: 'ERROR'});
+			return console.log(error);
+		}
+		console.log('Message %s sent: %s', info.messageId, info.response);
+		res.json({status: 'OK'});
+	});
+}
 
 async function verify_user(em, key) {
 	let found = false;

@@ -1,10 +1,25 @@
 const mongoose = require('mongoose');
 
+// TODO Make emails unique, for some reason it is possible to have two users with the same email
 const userSchema = new mongoose.Schema({
-	username: {type: String, index: true, unique: true, required: [true, "User name can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'This username is invalid, please use only letters a-z, A-Z, or digits 0-9']},
-	password: String,
+	username: {
+		type: String,
+		index: true,
+		unique: true,
+		required: [true, "User name can't be blank"],
+	},
+	password: {
+		type: String,
+		required: [true, "Please enter a password"]
+	},
 	sid: String,
-	email: {type: String, index: true, required: [true, "Email can't be blank"], match: [/\S+@\S+\.\S+/, 'Email you entered is invalid, please use proper format example@somewhere.com ']},
+	email: {
+		type: String,
+		index: true,
+		unique: true,
+		required: [true, "Email can't be blank"],
+		match: [/\S+@\S+\.\S+/, 'Email you entered is invalid, please use proper format example@somewhere.com ']
+	},
 	enabled: {type: String, default: "False"},
 });
 
