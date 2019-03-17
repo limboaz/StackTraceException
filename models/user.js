@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: [true, "Please enter a password"]
 	},
+	reputation: Number, // maybe we can populate user model to question, so VP added this field here
 	sid: String,
 	email: {
 		type: String,
@@ -24,6 +25,7 @@ const userSchema = new mongoose.Schema({
 	},
 	enabled: {type: String, default: "False"},
 });
+
 
 userSchema.plugin(uniqueValidator);
 module.exports = mongoose.model('User', userSchema);
