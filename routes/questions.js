@@ -57,12 +57,13 @@ router.post('/:id/answers/add', function (req,res) {
 });
 
 router.get('/:id/answers', function (req, res) {
-    Question.findOne({id: req.params.id}).populate('answers').exec((err, answers) => {
+    Question.findOne({id: req.params.id}).populate('answers').select('answers').exec((err, question) => {
         if (err) {
             res.json({status: "error", error: err.toString()});
             return console.log(err);
         }
-        console.log("Populated answers " + answers);
+        // console.log("Populated answers + answers);
+        res.json({status: 'OK', answers: question.answers});
     });
 });
 
