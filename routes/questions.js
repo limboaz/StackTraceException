@@ -36,7 +36,7 @@ router.post('/add', function(req, res){
 
 //create new answer
 router.post('/:id/answers/add', function (req,res) {
-    Question.findByIdAndUpdate({id: req.params.id}, function(err, question){
+    Question.findOne({id: req.params.id}, function(err, question){
         if(err)
             return res.json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
@@ -49,6 +49,7 @@ router.post('/:id/answers/add', function (req,res) {
         });
         question.answer_count++;
         question.answers.push(answer);
+        question.save();
         console.log("Added answer to the question: " + question.id);
         res.json({status:"OK", id:answer.id});
     });
