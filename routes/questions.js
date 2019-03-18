@@ -22,14 +22,8 @@ router.get('/:id', function (req, res) {
 
 //create new question
 router.post('/add', function(req, res){
-<<<<<<< HEAD
     if(!req.session.userId)
-        res.json({status: "error", error: "User not logged in."});
-=======
-    let session = req.sessionId;
-    if(!session)
         return res.json({status: "error", error: "User not logged in."});
->>>>>>> 78f4f7b49bba6de64ecafa56876d95634dd46ebe
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.id = new mongoStore.Types.ObjectId();
