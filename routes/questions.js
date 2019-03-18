@@ -22,12 +22,11 @@ router.get('/:id', function (req, res) {
 
 //create new question
 router.post('/add', function(req, res){
-    let session = req.sessionId;
-    if(!session)
+    if(!req.session.userId)
         res.json({status: "error", error: "User not logged in."});
     let question = new Question(req.body);
     question.user = req.session.userId;
-    question.id = mongoStore.Types.ObjectId();
+    question.id = new mongoStore.Types.ObjectId();
     question.save(function(err, question){
        if(err) return res.json({status:"error", error: err.toString()});
        console.log("successfully created questions " + question.title);
@@ -41,7 +40,7 @@ router.post('/:id/answers/add', function (req,res) {
         if(err)
             res.json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
-        answer.id = mongoStore.Types.ObjectId();
+        answer.id = new mongoStore.Types.ObjectId();
         answer.question_id = question.id;
         answer.save(function(err, answer){
            if(err)
