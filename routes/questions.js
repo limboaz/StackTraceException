@@ -22,8 +22,14 @@ router.get('/:id', function (req, res) {
 
 //create new question
 router.post('/add', function(req, res){
+<<<<<<< HEAD
     if(!req.session.userId)
         res.json({status: "error", error: "User not logged in."});
+=======
+    let session = req.sessionId;
+    if(!session)
+        return res.json({status: "error", error: "User not logged in."});
+>>>>>>> 78f4f7b49bba6de64ecafa56876d95634dd46ebe
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.id = new mongoStore.Types.ObjectId();
@@ -38,13 +44,13 @@ router.post('/add', function(req, res){
 router.post('/:id/answers/add', function (req,res) {
     Question.findByIdAndUpdate({id: req.params.id}, function(err, question){
         if(err)
-            res.json({status: "error", error: err.toString()});
+            return res.json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
         answer.id = new mongoStore.Types.ObjectId();
         answer.question_id = question.id;
         answer.save(function(err, answer){
            if(err)
-               res.json({status: "error", error: err.toString()});
+               return res.json({status: "error", error: err.toString()});
             console.log("answer generated: id = " + answer.id);
         });
         question.answer_count++;

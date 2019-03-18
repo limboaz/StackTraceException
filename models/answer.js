@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const answerSchema = new Schema({
-    id: String,
+    id: {type: String, index: true},
     question_id: String, // either have a field with question id we answered here or populate answers in question model.. VP
-    user: String, // id of poster
-    body: String,
-    score: Number,
-    is_accepted: Boolean,
+    user: {type: String, index: true},// id of poster
+    body: {type: String, required: true},
+    score: {type: Number, default: 0},
+    is_accepted: {type: Boolean, default: false},
     timestamp: {
-        type: Date,
-        default: Date.now
+        type: Number,
+        default: Date.now() / 1000
     },
     media: [Number]
 });
