@@ -45,7 +45,7 @@ router.get('/verify', function (req, res) {
 		if (value)
 			res.json({status: "OK"});
 		else
-			res.json({status: "ERROR", error: "Verify user error in GET"});
+			res.json({status: "error", error: "Verify user error in GET"});
 	});
 });
 
@@ -54,7 +54,7 @@ router.post('/login', function (req, res) {
 	const pass = req.body.password;
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
-			res.json({status: "ERROR", error: err.toString()});
+			res.json({status: "error", error: err.toString()});
 			return console.log(err);
 		}
 		let psid = user.sid;
@@ -76,7 +76,7 @@ router.post('/login', function (req, res) {
 });
 
 router.post('/logout', function (req, res) {
-	if (!req.session.userId) return res.json({status: "ERROR", error: "Error in logout"});
+	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
 	res.clearCookie('STE');
 	res.json({status: "OK"});
 });
@@ -130,7 +130,7 @@ function send_email(user, res){
 
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) {
-			res.json({status: 'ERROR', error: error.toString()});
+			res.json({status: 'error', error: error.toString()});
 			return console.log(error);
 		}
 		console.log('Message %s sent: %s', info.messageId, info.response);
