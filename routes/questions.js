@@ -24,7 +24,7 @@ router.get('/:id', function (req, res) {
 router.post('/add', function(req, res){
     let session = req.sessionId;
     if(!session)
-        res.json({status: "error", error: "User not logged in."});
+        return res.json({status: "error", error: "User not logged in."});
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.id = mongoStore.Types.ObjectId();
@@ -39,13 +39,13 @@ router.post('/add', function(req, res){
 router.post('/:id/answers/add', function (req,res) {
     Question.findByIdAndUpdate({id: req.params.id}, function(err, question){
         if(err)
-            res.json({status: "error", error: err.toString()});
+            return res.json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
         answer.id = mongoStore.Types.ObjectId();
         answer.question_id = question.id;
         answer.save(function(err, answer){
            if(err)
-               res.json({status: "error", error: err.toString()});
+               return res.json({status: "error", error: err.toString()});
             console.log("answer generated: id = " + answer.id);
         });
         question.answer_count++;
