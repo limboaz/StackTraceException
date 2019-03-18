@@ -1,13 +1,15 @@
+
+
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
     id: String,
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
     answers: {
-        type: [Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'Answer'
     }, // either populate or add field question id in answers model.. VP
     // user: {
