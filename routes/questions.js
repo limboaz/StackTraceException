@@ -30,7 +30,7 @@ router.post('/add', function(req, res){
     question.save(function(err, question){
        if(err) return res.json({status:"error", error: err.toString()});
        console.log("successfully created questions " + question.title);
-        res.json({status: "OK", id: question._id});
+        res.json({status: "OK", id: question.id});
     });
 });
 
