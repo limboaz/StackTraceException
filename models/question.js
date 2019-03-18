@@ -8,12 +8,7 @@ const questionSchema = new Schema({
         ref: 'User'
     },
     answers: [{type: Schema.Types.ObjectId, ref: 'Answer'}],
-    // either populate or add field question id in answers model.. VP
-    // user: {
-    //     id: String,
-    //     username: String,
-    //     reputation: Number
-    // },
+    title: String,
     body: String,
     score: Number,
     view_count: Number,
