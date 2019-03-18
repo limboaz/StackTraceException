@@ -6,6 +6,7 @@ const session = require('express-session');
 
 const mongoStore = require('./mongoose');
 const userRouter = require('./routes/user');
+const questionsRouter = require('./routes/questions');
 const app = express();
 
 app.engine('hbs', hbs({extname: 'hbs', layoutsDir: 'public'}));
@@ -25,5 +26,6 @@ app.use(session({
 }));
 
 app.use('/', userRouter);
+app.use('/questions', questionsRouter);
 
 module.exports = app;
