@@ -1,6 +1,7 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const User = require('../models/user');
+const Question = require('../models/question');
 const mongoStore = require('../mongoose');
 const router = express.Router();
 const __dir = 'public';
@@ -78,6 +79,35 @@ router.post('/logout', function (req, res) {
 	if (!req.session.userId) return res.json({status: "ERROR"});
 	res.clearCookie('STE');
 	res.json({status: "OK"});
+});
+
+router.post('/search', function(req, res){
+	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
+	let limit = req.body.limit && req.body.limit < 100 ? req.body.limit : 25;
+	let accepted = req.body.accepted;
+	// build query
+	let query = Question.
+		find({
+			// find with timestamp less than or equal to timestamp
+			timestamp: {$lte: timestamp}
+		}).
+		// retrieve the latest ones
+		sort({timestamp: 'descending'}).
+		limit(limit).
+		populate({
+			// only select the username and reputation
+			path: 'user',
+			select: 'username reputation id'
+		}).
+		select('-answers'); // don't select the answers property of question
+	if (accepted)
+		query.exists('accepted_answer_id', true);
+
+	// execute query and return result
+	query.exec(function(err, result){
+		if (err) return res.json({status: "error", error: err.toString()});
+		res.json({status:"OK", questions:result});
+	});
 });
 
 function send_email(user, res){

@@ -1,17 +1,14 @@
-
-
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const questionSchema = new mongoose.Schema({
+const questionSchema = new Schema({
     id: String,
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    answers: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Answer'
-    }, // either populate or add field question id in answers model.. VP
+    answers: [{type: Schema.Types.ObjectId, ref: 'Answer'}],
+    // either populate or add field question id in answers model.. VP
     // user: {
     //     id: String,
     //     username: String,
@@ -23,7 +20,7 @@ const questionSchema = new mongoose.Schema({
     answer_count: Number,
     timestamp: {
         type: Date,
-        default: Date.now
+        default: Date.now() / 1000 // Date in unix time, Date.now returns in milliseconds so need seconds ID
     },
     media: [Number],
     tags: [String],

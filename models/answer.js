@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const answerSchema = new mongoose.Schema({
+const answerSchema = new Schema({
     id: String,
     question_id: String, // either have a field with question id we answered here or populate answers in question model.. VP
     user: String, // id of poster
