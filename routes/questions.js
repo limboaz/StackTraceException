@@ -42,6 +42,7 @@ router.post('/:id/answers/add', function (req,res) {
         let answer = new Answer(req.body);
         answer.id = new mongoose.Types.ObjectId();
         answer.question_id = question.id;
+        answer.user = req.session.userId;
         answer.save(function(err, answer){
            if(err)
                return res.json({status: "error", error: err.toString()});
