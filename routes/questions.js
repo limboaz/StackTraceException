@@ -2,7 +2,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const Answer = require('../models/answer');
 const Question = require('../models/question');
-const mongoStore = require('../mongoose');
+const mongoose = require('mongoose');
 const router = express.Router();
 const __dir = 'public';
 
@@ -26,7 +26,7 @@ router.post('/add', function(req, res){
         return res.json({status: "error", error: "User not logged in."});
     let question = new Question(req.body);
     question.user = req.session.userId;
-    question.id = new mongoStore.Types.ObjectId();
+    question.id = new mongoose.Types.ObjectId();
     question.save(function(err, question){
        if(err) return res.json({status:"error", error: err.toString()});
        console.log("successfully created questions " + question.title);
@@ -40,7 +40,7 @@ router.post('/:id/answers/add', function (req,res) {
         if(err)
             return res.json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
-        answer.id = new mongoStore.Types.ObjectId();
+        answer.id = new mongoose.Types.ObjectId();
         answer.question_id = question.id;
         answer.save(function(err, answer){
            if(err)
