@@ -23,12 +23,13 @@ router.get('/:id', function (req, res) {
 });
 
 router.get('/:id/answers', function (req, res) {
-    Question.findOne({id: req.params.id}).populate('answers').exec((err, answers) => {
+    Question.findOne({id: req.params.id}).populate('answers').select('answers').exec((err, question) => {
         if (err) {
             res.json({status: "error"});
             return console.log(err); // TODO add reasonable error message
         }
-        console.log("Populated answers " + answers);
+        // console.log("Populated answers + answers);
+        res.json({status: 'OK', answers: question.answers});
     });
 });
 
