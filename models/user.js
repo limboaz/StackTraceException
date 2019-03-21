@@ -14,8 +14,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: [true, "Please enter a password"]
 	},
-	reputation: Number, // maybe we can populate user model to question, so VP added this field here
-	sid: String,
+	reputation: {type: Number, default: 0}, // maybe we can populate user model to question, so VP added this field here
 	email: {
 		type: String,
 		index: true,
