@@ -2,7 +2,6 @@ const express = require('express');
 const Answer = require('../models/answer');
 const Question = require('../models/question');
 const History = require('../models/history');
-const mongoose = require('mongoose');
 const router = express.Router();
 const __dir = 'public';
 
