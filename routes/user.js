@@ -99,13 +99,14 @@ router.post('/search', function(req, res){
 			path: 'user',
 			select: 'username reputation id'
 		}).
-		select('-answers'); // don't select the answers property of question
+		select('-answers -history_id'); // don't select the answers property of question
 	if (accepted)
 		query.exists('accepted_answer_id', true);
 
 	// execute query and return result
 	query.exec(function(err, result){
 		if (err) return res.json({status: "error", error: err.toString()});
+		result.user.id = result.user._id;
 		res.json({status:"OK", questions:result});
 	});
 });
