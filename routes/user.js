@@ -116,16 +116,12 @@ function send_email(user, res){
 		host: 'localhost',
 		port: 25,
 		secure: false,
-		// auth: {
-		// 	user: 'mailmaster',
-		// 	pass: 'mailmaster'
-		// },
 		tls: {
 			rejectUnauthorized: false
 		}
 	});
 	let mailOptions = {
-		from: 'mailmaster@localhost',
+		from: 'mailmaster@StackTraceException.com',
 		to: user.email,
 		subject: 'Verifying your Tic Tac Toe account',
 		text: 'validation key:<' + user.enabled + '>\n' +
