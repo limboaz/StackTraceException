@@ -97,7 +97,7 @@ router.post('/search', function(req, res){
 		populate({
 			// only select the username and reputation
 			path: 'user',
-			select: 'username reputation id'
+			select: 'username reputation'
 		}).
 		select('-answers -history_id'); // don't select the answers property of question
 	if (accepted)
