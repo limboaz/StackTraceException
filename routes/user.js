@@ -113,21 +113,23 @@ router.post('/search', function(req, res){
 
 function send_email(user, res){
 	let transporter = nodemailer.createTransport({
-		host: 'smtp.mail.yahoo.com',
-		port: 465,
-		service: 'yahoo',
+		host: 'localhost',
+		port: 25,
 		secure: false,
-		auth: {
-			user: 'tictactoeppg@yahoo.com',
-			pass: 'helloppg2019'
+		// auth: {
+		// 	user: 'mailmaster',
+		// 	pass: 'mailmaster'
+		// },
+		tls: {
+			rejectUnauthorized: false
 		}
 	});
 	let mailOptions = {
-		from: 'tictactoeppg@yahoo.com',
+		from: 'mailmaster@localhost',
 		to: user.email,
 		subject: 'Verifying your Tic Tac Toe account',
-		text: 'validation key:<' + user.enabled + '> or click here' +
-				'Click on this link to verify your account http://localhost:3000/ttt/verify?email=' + user.email + "&key=" + user.enabled
+		text: 'validation key:<' + user.enabled + '>\n' +
+			  'Or click on this link to verify your account http://152.44.36.183/verify?email=' + user.email + "&key=" + user.enabled
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
