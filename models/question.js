@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const History = require('./history');
+const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
-	id: {type: String, index: true, default: new mongoose.Types.ObjectId()},
+	id: {type: String, index: true, default: shortid.generate},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',

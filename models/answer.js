@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const answerSchema = new Schema({
-    id: {type: String, index: true, default: new mongoose.Types.ObjectId()},
+    id: {type: String, index: true, default: shortid.generate},
     question_id: String, // either have a field with question id we answered here or populate answers in question model.. VP
     user: {type: String, index: true},// id of poster
     body: {type: String, required: true},
