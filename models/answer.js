@@ -11,7 +11,7 @@ const answerSchema = new Schema({
     is_accepted: {type: Boolean, default: false},
     timestamp: {
         type: Number,
-        default: () => Date.now() / 1000
+        default: () => Math.floor(Date.now() / 1000)
     },
     media: [Number]
 });

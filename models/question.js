@@ -27,7 +27,7 @@ const questionSchema = new Schema({
 	},
 	timestamp: {
 		type: Number,
-		default: () => Date.now() / 1000 // Date in unix time, Date.now returns in milliseconds so need seconds ID
+		default: () => Math.floor(Date.now() / 1000) // Date in unix time, Date.now returns in milliseconds so need seconds ID
 	},
 	media: [Number],
 	tags: [String],
