@@ -59,7 +59,7 @@ router.post('/login', function (req, res) {
 		}
 		let psid = user.sid;
 		user.sid = req.sessionID;
-		req.session.userId = user._id;
+		req.session.userId = user.username;
 		if (psid) {
 			mongoStore.get(psid, function (err, session) {
 				if (err) console.log(err);
@@ -84,7 +84,7 @@ router.post('/logout', function (req, res) {
 router.post('/search', function(req, res){
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit < 100 ? req.body.limit : 25;
-	let accepted = req.body.accepted;
+	let accepted = req.body.accepted === true;
 	// build query
 	let query = Question.
 		find({
