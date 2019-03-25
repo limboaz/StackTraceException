@@ -54,7 +54,7 @@ router.post('/login', function (req, res) {
 	const pass = req.body.password;
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
-			res.json({status: "error", error: err.toString()});
+			res.json({status: "error", error: err ? err.toString() : "Invalid user"});
 			return console.log(err);
 		}
 		let psid = user.sid;
