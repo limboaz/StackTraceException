@@ -107,7 +107,6 @@ router.post('/search', function(req, res){
 	// execute query and return result
 	query.exec(function(err, result){
 		if (err) return res.json({status: "error", error: err.toString()});
-		result.user.id = result.user._id;
 		res.json({status:"OK", questions:result});
 	});
 });

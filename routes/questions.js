@@ -36,6 +36,7 @@ function send_question(quest, req, res){
         exec(function (err, quest) {
             if (err || !quest )
                 return res.json({status: "error", error: err ? err.toString() : "Question not found"});
+            console.log(quest);
             res.json({status: "OK", question: quest});
         });
 }
@@ -44,6 +45,7 @@ function send_question(quest, req, res){
 router.post('/add', function(req, res){
     if(!req.session.userId)
         return res.json({status: "error", error: "User not logged in."});
+    req.body.media = null;
     console.log(req.body);
     let question = new Question(req.body);
     question.user = req.session.userId;
