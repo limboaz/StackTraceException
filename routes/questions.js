@@ -11,26 +11,28 @@ router.get('/:id', function (req, res) {
 
     Question.findOne({id: req.params.id}).
         populate({path: 'user', select: 'username reputation -_id'}).
-        select('-answers').
+        select('-answers -_id -history_id').
         exec(function (err, quest) {
 			if (err || !quest )
 					return res.json({status: "error", error: err ? err.toString() : "Question not found"});
 			res.json({status: "OK", question: quest});
-			History.findById(quest.history_id, function(err, history){
-              if (!req.session.userId){
-                  let ip = req.connection.remoteAddress;
-                  if (!history.ips.includes(ip)) {
-                      quest.view_count++;
-                      history.ips.push(ip);
-                  }
-              } else if (!history.users.includes(req.session.userId)){
-                  quest.view_count++;
-                  history.users.push(req.session.userId);
-              }
-              quest.save();
-              history.save();
-            });
         });
+    Question.findOne({id: req.params.id}, function(err, quest){
+        History.findById(quest.history_id, function(err, history){
+            if (!req.session.userId){
+                let ip = req.connection.remoteAddress;
+                if (!history.ips.includes(ip)) {
+                    quest.view_count++;
+                    history.ips.push(ip);
+                }
+            } else if (!history.users.includes(req.session.userId)){
+                quest.view_count++;
+                history.users.push(req.session.userId);
+            }
+            quest.save();
+            history.save();
+        });
+    })
 });
 
 //create new question
