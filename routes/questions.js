@@ -9,15 +9,9 @@ router.get('/:id', function (req, res) {
     console.log("We are in questions id");
     console.log(req.params.id);
 
-    Question.findOne({id: req.params.id}).
-        populate({path: 'user', select: 'username reputation -_id'}).
-        select('-answers -_id -history_id').
-        exec(function (err, quest) {
-			if (err || !quest )
-					return res.json({status: "error", error: err ? err.toString() : "Question not found"});
-			res.json({status: "OK", question: quest});
-        });
     Question.findOne({id: req.params.id}, function(err, quest){
+        if (err || !quest )
+            return res.json({status: "error", error: err ? err.toString() : "Question not found"});
         History.findById(quest.history_id, function(err, history){
             if (!req.session.userId){
                 let ip = req.connection.remoteAddress;
@@ -29,11 +23,22 @@ router.get('/:id', function (req, res) {
                 quest.view_count++;
                 history.users.push(req.session.userId);
             }
-            quest.save();
+            quest.save().then((quest) => send_question(quest, req, res));
             history.save();
         });
-    })
+    });
 });
+
+function send_question(quest, req, res){
+    Question.findOne({id: req.params.id}).
+        populate({path: 'user', select: 'username reputation -_id'}).
+        select('-answers -_id -history_id').
+        exec(function (err, quest) {
+            if (err || !quest )
+                return res.json({status: "error", error: err ? err.toString() : "Question not found"});
+            res.json({status: "OK", question: quest});
+        });
+}
 
 //create new question
 router.post('/add', function(req, res){
