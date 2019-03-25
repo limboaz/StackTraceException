@@ -11,7 +11,7 @@ router.get('/:id', function (req, res) {
 
     Question.findOne({id: req.params.id}).
         populate({path: 'user', select: 'username reputation'}).
-        select('-answers -_id').
+        select('-answers').
         exec(function (err, quest) {
 			if (err || !quest )
 					return res.json({status: "error", error: err ? err.toString() : "Question not found"});

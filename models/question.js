@@ -31,7 +31,7 @@ const questionSchema = new Schema({
 	},
 	media: [Number],
 	tags: [String],
-	accepted_answer_id: {type: Schema.Types.ObjectId, ref: 'Answer'}
+	accepted_answer_id: {type: Schema.Types.ObjectId, ref: 'Answer', default: null}
 
 });
 
