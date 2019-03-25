@@ -10,7 +10,7 @@ router.get('/:id', function (req, res) {
     console.log(req.params.id);
 
     Question.findOne({id: req.params.id}).
-        populate({path: 'user', select: 'username reputation'}).
+        populate({path: 'user', select: 'username reputation -_id'}).
         select('-answers').
         exec(function (err, quest) {
 			if (err || !quest )
@@ -55,7 +55,7 @@ router.post('/:id/answers/add', function (req,res) {
             return res.json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
         answer.question_id = question.id;
-        answer.user = req.session.userId;
+        answer.user = req.session.username;
         answer.save(function(err, answer){
            if(err)
                return res.json({status: "error", error: err.toString()});

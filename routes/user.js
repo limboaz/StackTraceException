@@ -59,7 +59,8 @@ router.post('/login', function (req, res) {
 		}
 		let psid = user.sid;
 		user.sid = req.sessionID;
-		req.session.userId = user.username;
+		req.session.userId = user._id;
+		req.session.username = user.username;
 		if (psid) {
 			mongoStore.get(psid, function (err, session) {
 				if (err) console.log(err);
