@@ -29,7 +29,7 @@ const questionSchema = new Schema({
 		type: Number,
 		default: () => Math.floor(Date.now() / 1000) // Date in unix time, Date.now returns in milliseconds so need seconds ID
 	},
-	media: [Number],
+	media: {type: [Number], default: null},
 	tags: [String],
 	accepted_answer_id: {type: Schema.Types.ObjectId, ref: 'Answer', default: null}
 

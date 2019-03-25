@@ -32,7 +32,7 @@ router.get('/:id', function (req, res) {
 function send_question(quest, req, res){
     Question.findOne({id: req.params.id}).
         populate({path: 'user', select: 'username reputation -_id'}).
-        select('-answers -_id -history_id').
+        select('-answers -_id -history_id -__v').
         exec(function (err, quest) {
             if (err || !quest )
                 return res.json({status: "error", error: err ? err.toString() : "Question not found"});
@@ -44,6 +44,7 @@ function send_question(quest, req, res){
 router.post('/add', function(req, res){
     if(!req.session.userId)
         return res.json({status: "error", error: "User not logged in."});
+    console.log(req.body);
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.save(function(err, question){
