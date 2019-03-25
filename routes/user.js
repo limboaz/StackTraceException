@@ -84,8 +84,10 @@ router.post('/logout', function (req, res) {
 
 router.post('/search', function(req, res){
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
-	let limit = req.body.limit && req.body.limit < 100 ? req.body.limit : 25;
+	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
 	let accepted = req.body.accepted === true;
+
+	console.log(req.body, accepted, limit, timestamp);
 	// build query
 	let query = Question.
 		find({
@@ -98,15 +100,16 @@ router.post('/search', function(req, res){
 		populate({
 			// only select the username and reputation
 			path: 'user',
-			select: 'username reputation'
+			select: 'username reputation -_id'
 		}).
-		select('-answers -history_id'); // don't select the answers property of question
+		select('-answers -history_id -_id -__v'); // don't select the answers property of question
 	if (accepted)
 		query.exists('accepted_answer_id', true);
 
 	// execute query and return result
 	query.exec(function(err, result){
 		if (err) return res.json({status: "error", error: err.toString()});
+		console.log(result);
 		res.json({status:"OK", questions:result});
 	});
 });
