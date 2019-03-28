@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const History = require('./history');
+const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
-	id: {type: String, index: true, default: new mongoose.Types.ObjectId()},
+	id: {type: String, index: true, default: shortid.generate},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
@@ -26,11 +27,11 @@ const questionSchema = new Schema({
 	},
 	timestamp: {
 		type: Number,
-		default: () => Date.now() / 1000 // Date in unix time, Date.now returns in milliseconds so need seconds ID
+		default: () => Math.floor(Date.now() / 1000) // Date in unix time, Date.now returns in milliseconds so need seconds ID
 	},
-	media: [Number],
+	media: {type: [Number], default: null},
 	tags: [String],
-	accepted_answer_id: {type: Schema.Types.ObjectId, ref: 'Answer'}
+	accepted_answer_id: {type: Schema.Types.ObjectId, ref: 'Answer', default: null}
 
 });
 

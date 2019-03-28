@@ -54,12 +54,13 @@ router.post('/login', function (req, res) {
 	const pass = req.body.password;
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
-			res.json({status: "error", error: err.toString()});
+			res.json({status: "error", error: err ? err.toString() : "Invalid user"});
 			return console.log(err);
 		}
 		let psid = user.sid;
 		user.sid = req.sessionID;
 		req.session.userId = user._id;
+		req.session.username = user.username;
 		if (psid) {
 			mongoStore.get(psid, function (err, session) {
 				if (err) console.log(err);
@@ -83,8 +84,10 @@ router.post('/logout', function (req, res) {
 
 router.post('/search', function(req, res){
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
-	let limit = req.body.limit && req.body.limit < 100 ? req.body.limit : 25;
-	let accepted = req.body.accepted;
+	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
+	let accepted = req.body.accepted === true;
+
+	console.log(req.body, accepted, limit, timestamp);
 	// build query
 	let query = Question.
 		find({
@@ -97,37 +100,35 @@ router.post('/search', function(req, res){
 		populate({
 			// only select the username and reputation
 			path: 'user',
-			select: 'username reputation id'
+			select: 'username reputation -_id'
 		}).
-		select('-answers -history_id'); // don't select the answers property of question
+		select('-answers -history_id -_id -__v'); // don't select the answers property of question
 	if (accepted)
 		query.exists('accepted_answer_id', true);
 
 	// execute query and return result
 	query.exec(function(err, result){
 		if (err) return res.json({status: "error", error: err.toString()});
-		result.user.id = result.user._id;
+		console.log(result);
 		res.json({status:"OK", questions:result});
 	});
 });
 
 function send_email(user, res){
 	let transporter = nodemailer.createTransport({
-		host: 'smtp.mail.yahoo.com',
-		port: 465,
-		service: 'yahoo',
+		host: 'localhost',
+		port: 25,
 		secure: false,
-		auth: {
-			user: 'tictactoeppg@yahoo.com',
-			pass: 'helloppg2019'
+		tls: {
+			rejectUnauthorized: false
 		}
 	});
 	let mailOptions = {
-		from: 'tictactoeppg@yahoo.com',
+		from: 'mailmaster@StackTraceException.com',
 		to: user.email,
 		subject: 'Verifying your Tic Tac Toe account',
-		text: 'validation key:<' + user.enabled + '> or click here' +
-				'Click on this link to verify your account http://localhost:3000/ttt/verify?email=' + user.email + "&key=" + user.enabled
+		text: 'validation key:<' + user.enabled + '>\n' +
+			  'Or click on this link to verify your account http://152.44.36.183/verify?email=' + user.email + "&key=" + user.enabled
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
