@@ -5,6 +5,7 @@ const hbs = require('express-handlebars');
 const session = require('express-session');
 
 const mongoStore = require('./mongoose');
+const homeRouter = require('./routes/home');
 const userRouter = require('./routes/user');
 const questionsRouter = require('./routes/questions');
 const app = express();
@@ -25,7 +26,8 @@ app.use(session({
 	cookie: {secure: false}
 }));
 
-app.use('/', userRouter);
+app.use('/', homeRouter);
+app.use('/user', userRouter);
 app.use('/questions', questionsRouter);
 
 module.exports = app;
