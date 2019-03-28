@@ -6,8 +6,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 const userSchema = new mongoose.Schema({
 	username: {
 		type: String,
-		index: true,
-		unique: true,
+		index: {unique: true},
 		required: [true, "User name can't be blank"],
 	},
 	password: {
@@ -17,8 +16,7 @@ const userSchema = new mongoose.Schema({
 	reputation: {type: Number, default: 0}, // maybe we can populate user model to question, so VP added this field here
 	email: {
 		type: String,
-		index: true,
-		unique: true,
+		index: {unique: true},
 		required: [true, "Email can't be blank"],
 		match: [/\S+@\S+\.\S+/, 'Email you entered is invalid, please use proper format example@somewhere.com ']
 	},
