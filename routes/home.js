@@ -86,14 +86,16 @@ router.post('/search', function(req, res){
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
 	let accepted = req.body.accepted === true;
+	let query_string = req.body.q ? new RegExp(".*" + req.body.q + ".*") : /.*/;
 
 	console.log(req.body, accepted, limit, timestamp);
 	// build query
 	let query = Question.
 		find({
 			// find with timestamp less than or equal to timestamp
-			timestamp: {$lte: timestamp}
+			timestamp: {$lte: timestamp},
 		}).
+		or([{title: query_string}, {body: query_string}]).
 		// retrieve the latest ones
 		sort({timestamp: 'descending'}).
 		limit(limit).
