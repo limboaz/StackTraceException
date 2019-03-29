@@ -7,6 +7,7 @@ const session = require('express-session');
 const mongoStore = require('./mongoose');
 const homeRouter = require('./routes/home');
 const userRouter = require('./routes/user');
+const indexRouter = require('./routes/index');
 const questionsRouter = require('./routes/questions');
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(session({
 }));
 
 app.use('/', homeRouter);
+app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/questions', questionsRouter);
 
