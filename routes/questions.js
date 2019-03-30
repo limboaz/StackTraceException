@@ -98,41 +98,41 @@ router.get('/:id/answers', function (req, res) {
 router.delete('/:id', function(req, res){
     //check if the user is asker.
     if(!req.session.userId) {
-        res.status(404);
+        res.status(404).json({status: "error 404", error: "User not logged in. "});
         return console.log("User not logged in when deleting question. ");
     }
     Question.findOne({id: req.params.id}, function(err, question){
         if(err){
-            res.status(400);
+            res.status(400).json({status: "error 400", error: err.toString()});
             return console.log(err.toString());
         }
-        if(question.user !==  req.session.userId){
-            res.status(401);
+        if(question.user.toString() !== req.session.userId.toString()){
+            res.status(401).json({status:"error 401",error: "You are not authorized to perform this operation."});
             return console.log("You are not authorized to perform this operation.");
-        }
-    });
-
-    Question.findOneAndRemove({id: req.params.id}, function(err, question){
-        if(err) {
-            res.status(404);
-            return console.log(err.toString());
-        }
+        }else{
+            Question.findOneAndRemove({id: req.params.id}, function(err, question){
+             if(err) {
+                res.status(404).json({status: "error 404", error: err.toString()});
+                return console.log(err.toString());
+             }
         //remove the answers associated with it
-        Answer.deleteMany({question_id: question.id}, function(err){
+            Answer.deleteMany({question_id: question.id}, function(err){
             if(err){
-                res.status(404);
+                res.status(404).json({status: "error 404", error: err.toString()});
                 return console.log(err.toString());
             }
-        })
-            .exec(function(err, res){
-               if(err){
-                   res.status(404);
-                   return console.log(err.toString());
-               }
-            });
+            })
+                .exec(function(err, res){
+                if(err){
+                    res.status(404).json({status: "error 404", error: err.toString()});
+                    return console.log(err.toString());
+                    }
+                });
 
-        res.status(200);
-        res.send();
+            res.status(200).json({status: "OK"});
+            res.send();
+            });
+        }
     });
 });
 
