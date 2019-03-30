@@ -87,11 +87,53 @@ router.get('/:id/answers', function (req, res) {
         exec((err, question) => {
             if (err) {
                 res.json({status: "error", error: err.toString()});
-                return console.log(err);
+                return console.log(err.toString());
             }
             // console.log("Populated answers + answers);
             res.json({status: 'OK', answers: question.answers});
         });
+});
+
+//
+router.delete('/:id', function(req, res){
+    //check if the user is asker.
+    if(!req.session.userId) {
+        res.status(404);
+        return console.log("User not logged in when deleting question. ");
+    }
+    Question.findOne({id: req.params.id}, function(err, question){
+        if(err){
+            res.status(400);
+            return console.log(err.toString());
+        }
+        if(question.user !==  req.session.userId){
+            res.status(401);
+            return console.log("You are not authorized to perform this operation.");
+        }
+    });
+
+    Question.findOneAndRemove({id: req.params.id}, function(err, question){
+        if(err) {
+            res.status(404);
+            return console.log(err.toString());
+        }
+        //remove the answers associated with it
+        Answer.deleteMany({question_id: question.id}, function(err){
+            if(err){
+                res.status(404);
+                return console.log(err.toString());
+            }
+        })
+            .exec(function(err, res){
+               if(err){
+                   res.status(404);
+                   return console.log(err.toString());
+               }
+            });
+
+        res.status(200);
+        res.send();
+    });
 });
 
 module.exports = router;
