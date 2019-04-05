@@ -14,8 +14,12 @@ router.get('/quest/:id', function (req, res) {
 	});
 });
 
+router.get('/', function(req, res){
+	res.render('index');
+});
+
+
 router.get(/.*\..*/, function (req, res) {
-	console.log(req.path);
 	res.status(404);
 	res.send('Not found');
 });

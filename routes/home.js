@@ -6,11 +6,6 @@ const mongoStore = require('../mongoose');
 const router = express.Router();
 const __dir = 'public';
 
-/* GET home page. */
-router.get('/', function (req, res) {
-	res.sendFile('index.html', {root: __dir});
-});
-
 router.get(/(javascripts)|(stylesheets)/, function (req, res) {
 	res.sendFile(req.path, {root: __dir});
 });
@@ -111,7 +106,6 @@ router.post('/search', function(req, res){
 	// execute query and return result
 	query.exec(function(err, result){
 		if (err) return res.json({status: "error", error: err.toString()});
-		console.log(result);
 		res.json({status:"OK", questions:result});
 	});
 });
