@@ -122,13 +122,6 @@ router.delete('/:id', function(req, res){
                 return console.log(err.toString());
             }
             });
-                // .exec(function(err, res){
-                // if(err){
-                //     res.status(404).json({status: "error 404", error: err.toString()});
-                //     return console.log(err.toString());
-                //     }
-                // });
-
             res.status(200).json({status: "OK"});
             });
         }
