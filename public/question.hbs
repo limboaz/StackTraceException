@@ -1,15 +1,45 @@
+<html>
 <head>
-<title>{{question.title}}</title>
+    <title>{{question.title}}</title>
+    <!-- CSS -->
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="stylesheets/main.css" type="text/css" rel="stylesheet">
+
+    <!-- JavaScript -->
+    <script src="javascript/jquery.min.js"></script>
+    <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script src="javascript/question.js"></script>
 </head>
+
 <body>
-<div id="question">
-    <h3>{{question.title}}</h3>
-    <a href={{user_link}}>-{{question.user.username}}</a>
-    <p>
-        {{question.body}}
-    </p>
-</div>
-<div id="answers">
-    {{for}}
+<div id="main_content" class="container">
+    <h3>Stack Trace Exception</h3>
+    <div id="question">
+        <h4>{{question.title}}</h4>
+        <a class="badge badge-pill badge-secondary"
+           href={{user_url question.user.username '/questions'}}>- {{question.user.username}}</a>
+        <h6> {{question.body}} </h6>
+        {{#each question.tags}}
+            <a href="#" style="margin-left: 3px; margin-right: 3px;" class="badge badge-pill badge-info">#{{this}}</a>
+        {{/each}}
+    </div>
+    <br>
+    <div id="answers">
+        <h5>Answers</h5>
+        <form class="form-inline" id="add" method="post" onsubmit="add_answer();return false;">
+            <input class="form-control mr-sm-2" id="add_body" type="text" placeholder="Write an answer">
+            <button class="btn btn-success my-2 my-sm-0" type="submit">Add</button>
+        </form>
+        <ul class="list-group answers">
+            {{#each answers}}
+                <li class="list-group-item">
+                    <h6>{{this.body}}</h6>
+                    <a href={{user_url this.user '/answers'}}>- {{this.user}}</a>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
 </div>
 </body>
+
+</html>
