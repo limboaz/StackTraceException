@@ -1,10 +1,14 @@
-var answer = {user: "", body: ""};
+var answer
 
 function result(json){
     if (json.status !== 'OK') return alert(json.error);
     let list = $('.list-group');
-    let url = "/user/" + answer.user + "/answers";
-    list.append('<h6>${answer.body}</h6>\n' + '<a href=' + url + '>- ${answer.user}</a>');
+    let url = "/u/" + json.user;
+    let odiv = '<li class="list-group-item">';
+    let cdiv = '</li>';
+    let body = '<h6>' + answer + '</h6>\n';
+    let link = '<a href=' + url + '>-' + json.user + '</a>';
+    list.append(odiv + body + link + cdiv);
 }
 
 function delete_question() {
@@ -18,8 +22,11 @@ function delete_question() {
 }
 
 function add_answer() {
-    let params = {body: $('#add_body').val()};
+    let body = $('#add_body')[0];
+    let params = {body: body.value};
+    body.value = '';
     let id = window.location.pathname.split('/')[2];
+    answer = params.body;
     $.ajax({
         url: '/questions/' + id + '/answers/add',
         type: 'POST',

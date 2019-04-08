@@ -2,6 +2,18 @@ function initialize(){
 
 }
 
+function reload_page(){
+	location.reload(true);
+}
+
+function logout(){
+	$.ajax({
+		url: '/logout',
+		type: 'POST',
+		success: reload_page
+	})
+}
+
 function results(json){
 	let questions = json.questions;
 	let results = $('#results');

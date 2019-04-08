@@ -8,6 +8,7 @@
     <!-- JavaScript -->
     <script src="javascript/jquery.min.js"></script>
     <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script src="javascript/index.js"></script>
     <script src="javascript/question.js"></script>
 </head>
 
@@ -16,9 +17,10 @@
     <nav class="row">
         <h3 class="col">Stack Trace Exception</h3>
         {{#if logged_in}}
-            <button class="col-sm-auto btn btn-danger my-2 my-sm-0" onclick="delete_question()">Delete Question</button>
+            <button class="col-sm-auto btn btn-danger my-2 my-sm-0" style="margin-right: 5px" onclick="delete_question()">Delete Question</button>
+            <button href="/logout" class="col-sm-auto btn btn-info" onclick="logout()">Logout</button>
         {{else}}
-            <a href="/log-in" class="col-sm-auto btn btn-info">Log-In</a>
+            <a href="/login" class="col-sm-auto btn btn-info">Login</a>
         {{/if}}
     </nav>
     <div id="question">

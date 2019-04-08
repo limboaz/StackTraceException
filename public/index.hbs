@@ -15,7 +15,14 @@
 
 <body>
 <div id="main_content" class="container">
-    <h3>Stack Trace Exception</h3>
+    <nav class="row">
+        <h3 class="col">Stack Trace Exception</h3>
+        {{#if logged_in}}
+            <button href="/logout" class="col-sm-auto btn btn-info" onclick="logout()">Logout</button>
+        {{else}}
+            <a href="/login" class="col-sm-auto btn btn-info">Login</a>
+        {{/if}}
+    </nav>
     <div>
         <form class="form-inline" id="search" method="post" action="" onsubmit="search();return false">
             <input class="form-control mr-sm-2" id="search_bar" type="search" placeholder="Search">

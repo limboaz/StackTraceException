@@ -78,14 +78,13 @@ router.post('/:id/answers/add', function (req, res) {
             if (err)
                 return res.json({status: "error", error: err.toString()});
             console.log("answer generated: id = " + answer.id);
+            question.answer_count++;
+            question.answers.push(answer);
+            question.save();
+            console.log("Added answer to the question: " + question.id);
+            res.json({status: "OK", id: answer.id, user: answer.user});
         });
-        question.answer_count++;
-        question.answers.push(answer);
-        question.save();
-        console.log("Added answer to the question: " + question.id);
-        res.json({status: "OK", id: answer.id});
     });
-
 });
 
 router.get('/:id/answers', function (req, res) {
@@ -130,12 +129,6 @@ router.delete('/:id', function (req, res) {
                         return console.log(err.toString());
                     }
                 });
-                // .exec(function(err, res){
-                // if(err){
-                //     res.status(404).json({status: "error 404", error: err.toString()});
-                //     return console.log(err.toString());
-                //     }
-                // });
 
                 res.status(200).json({status: "OK"});
             });
