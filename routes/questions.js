@@ -50,8 +50,10 @@ router.post('/add', function (req, res) {
         return res.json({status: "error", error: "User not logged in."});
     req.body.media = null;
     console.log(req.body);
+    req.body.tags = req.body.tags.value.split(',');
+    console.log(req.body.tags)
     let question = new Question(req.body);
-    question.tags = req.body.tags.value.split(',');
+    // question.tags = req.body.tags.value.split(',');
     console.log("Let's check tags")
     console.log(tags)
     question.user = req.session.userId;
