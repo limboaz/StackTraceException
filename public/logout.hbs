@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>{{question.title}}</title>
+    <!-- CSS -->
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="stylesheets/main.css" type="text/css" rel="stylesheet">
+
+    <!-- JavaScript -->
+    <script src="javascript/jquery.min.js"></script>
+    <script src="javascript/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+<div id="main_content" class="container">
+    <h3>Logout from StackOverflow-mini</h3>
+    <nav class="row">
+        <h4 class="col">
+            {{#if logged_in}}
+                <p>Hi, {{user_name}}</p>
+            {{else}}
+                <p>Please, login.</p>
+            {{/if}}
+        </h4>
+        {{#if logged_in}}
+            <button class="col-sm-auto btn btn-danger my-2 my-sm-0" onclick="location.href='/log-out'">Logout</button>
+        {{else}}
+            <a href="/login" class="col-sm-auto btn btn-info">Log In</a>
+        {{/if}}
+    </nav>
+</div>
+</body>
+
+</html>

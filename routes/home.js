@@ -34,14 +34,15 @@ router.post('/verify', function (req, res) {
 });
 
 router.get('/verify', function (req, res) {
-	let email = req.query.email;
-	let key = req.query.key;
-	verify_user(email, key).then(function (value) {
-		if (value)
-			res.json({status: "OK"});
-		else
-			res.json({status: "error", error: "Verify user error in GET"});
-	});
+	res.sendFile('verification.html', {root: __dir});
+	// let email = req.query.email;
+	// let key = req.query.key;
+	// verify_user(email, key).then(function (value) {
+	// 	if (value)
+	// 		res.json({status: "OK"});
+	// 	else
+	// 		res.json({status: "error", error: "Verify user error in GET"});
+	// });
 });
 
 router.get('/login', function (req, res) {
@@ -74,7 +75,14 @@ router.post('/login', function (req, res) {
 		res.json({status: "OK"});
 	});
 });
-
+router.get('/logout', function (req, res) {
+	res.render('logout', {user_name: req.session.username,logged_in: req.session.userId !== undefined})
+});
+router.get('/log-out', function (req, res) {
+	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
+	res.clearCookie('STE');
+	res.json({status: "OK"});
+});
 router.post('/logout', function (req, res) {
 	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
 	res.clearCookie('STE');
