@@ -41,6 +41,9 @@ function send_question(quest, req, res) {
     });
 }
 
+router.get('/add', function (req, res) {
+    res.render(res.render('add_question', {user_name: req.session.username, logged_in: req.session.userId !== undefined}))
+});
 //create new question
 router.post('/add', function (req, res) {
     if (!req.session.userId)
@@ -48,6 +51,9 @@ router.post('/add', function (req, res) {
     req.body.media = null;
     console.log(req.body);
     let question = new Question(req.body);
+    question.tags = req.body.tags.value.split(',');
+    console.log("Let's check tags")
+    console.log(tags)
     question.user = req.session.userId;
     question.save(function (err, question) {
         if (err) return res.json({status: "error", error: err.toString()});
