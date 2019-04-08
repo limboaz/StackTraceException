@@ -19,7 +19,7 @@ router.get('/quest/:id', function (req, res) {
 				return res.render('error');
 			}
 			let answers = b.answers;
-			res.render('question', {question: question, answers: answers})
+			res.render('question', {question: question, answers: answers, logged_in: req.session.userId !== undefined})
 		});
 	});
 });
@@ -33,8 +33,8 @@ router.get(/(javascript)|(stylesheets)/, function (req, res) {
 	res.sendFile(req.path.substr(i), {root: __dir});
 });
 
-handlebars.registerHelper('user_url', function(user, path){
-	return "/user/" + user + path;
+handlebars.registerHelper('user_url', function(user){
+	return "/u/" + user;
 });
 
 module.exports = router;

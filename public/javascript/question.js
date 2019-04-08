@@ -7,6 +7,16 @@ function result(json){
     list.append('<h6>${answer.body}</h6>\n' + '<a href=' + url + '>- ${answer.user}</a>');
 }
 
+function delete_question() {
+    let id = window.location.pathname.split('/')[2];
+    $.ajax({
+        url: '/questions/' + id,
+        type: 'DELETE',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+    });
+}
+
 function add_answer() {
     let params = {body: $('#add_body').val()};
     let id = window.location.pathname.split('/')[2];

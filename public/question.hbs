@@ -13,11 +13,18 @@
 
 <body>
 <div id="main_content" class="container">
-    <h3>Stack Trace Exception</h3>
+    <nav class="row">
+        <h3 class="col">Stack Trace Exception</h3>
+        {{#if logged_in}}
+            <button class="col-sm-auto btn btn-danger my-2 my-sm-0" onclick="delete_question()">Delete Question</button>
+        {{else}}
+            <a href="/log-in" class="col-sm-auto btn btn-info">Log-In</a>
+        {{/if}}
+    </nav>
     <div id="question">
         <h4>{{question.title}}</h4>
         <a class="badge badge-pill badge-secondary"
-           href={{user_url question.user.username '/questions'}}>- {{question.user.username}}</a>
+           href={{user_url question.user.username}}>- {{question.user.username}}</a>
         <h6> {{question.body}} </h6>
         {{#each question.tags}}
             <a href="#" style="margin-left: 3px; margin-right: 3px;" class="badge badge-pill badge-info">#{{this}}</a>
@@ -34,7 +41,7 @@
             {{#each answers}}
                 <li class="list-group-item">
                     <h6>{{this.body}}</h6>
-                    <a href={{user_url this.user '/answers'}}>- {{this.user}}</a>
+                    <a href={{user_url this.user}}>- {{this.user}}</a>
                 </li>
             {{/each}}
         </ul>
