@@ -49,6 +49,10 @@ router.get('/verify', function (req, res) {
 	});
 });
 
+router.get('/login', function (req, res) {
+	res.sendFile('login.html', {root: __dir});
+});
+
 router.post('/login', function (req, res) {
 	const name = req.body.username;
 	const pass = req.body.password;
