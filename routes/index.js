@@ -1,26 +1,40 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
-const User = require('../models/user');
-const Question = require('../models/question');
-const mongoStore = require('../mongoose');
+const request = require('request');
+const handlebars = require('handlebars');
 const router = express.Router();
 const __dir = 'public';
+const prefix = 'http://localhost:3000/';
 
-router.get('/:id', function(req, res){
-	Question.findOne({id: req.params.id}).
-		populate({path: 'user', select: 'username'}).
-		exec(function(err, question){
-			if (err || !question){
+router.get('/quest/:id', function (req, res) {
+	let quest = 'questions/' + req.params.id;
+	request.get(prefix + quest, function (err, resp, body) {
+		let b = JSON.parse(body);
+		if (err || b.status !== 'OK') {
+			return res.render('error');
+		}
+		let question = b.question;
+		request.get(prefix + quest + '/answers', function (err, resp, body) {
+			b = JSON.parse(body);
+			if (err || b.status !== 'OK') {
 				return res.render('error');
 			}
-			res.render('question', {question: question, user_link: '/user/' + question.user.username + '/questions'})
+			let answers = b.answers;
+			res.render('question', {question: question, answers: answers})
 		});
+	});
 });
 
-router.get(/.*\..*/, function(req, res){
-	console.log(req.path);
-	res.status(404);
-	res.send('Not found');
+router.get('/', function (req, res) {
+	res.render('index');
+});
+
+router.get(/(javascript)|(stylesheets)/, function (req, res) {
+	let i = req.path.search(/(javascript)|(stylesheets)/);
+	res.sendFile(req.path.substr(i), {root: __dir});
+});
+
+handlebars.registerHelper('user_url', function(user, path){
+	return "/user/" + user + path;
 });
 
 module.exports = router;

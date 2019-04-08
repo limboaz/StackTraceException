@@ -1,25 +1,31 @@
 <html>
 
 <head>
-  <title>Tic Tac Toe</title>
+    <title>Stack Trace Exception</title>
 
-  <!-- CSS -->
-  <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
-  <link href="stylesheets/main.css" type="text/css" rel="stylesheet">
+    <!-- CSS -->
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="stylesheets/main.css" type="text/css" rel="stylesheet">
 
-  <!-- JavaScript -->
-  <script src="javascripts/jquery.min.js"></script>
-  <script src="javascripts/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript -->
+    <script src="javascript/jquery.min.js"></script>
+    <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script src="javascript/index.js"></script>
 </head>
 
 <body>
-  <div id="main_content" class="container"  >
-    <h3>Welcome to Tic Tac Toe</h3>
-    <form method="POST" action="/ttt/">
-      <input type="text" class="input" name="name" placeholder="Enter your name">
-      <input type="submit" value="Submit" class="btn">
-    </form>
-  </div>
+<div id="main_content" class="container">
+    <h3>Stack Trace Exception</h3>
+    <div>
+        <form class="form-inline" id="search" method="post" action="" onsubmit="search();return false">
+            <input class="form-control mr-sm-2" id="search_bar" type="search" placeholder="Search">
+            <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+    <ul class="list-group" id="results">
+
+    </ul>
+</div>
 </body>
 
 </html>
