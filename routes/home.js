@@ -6,6 +6,10 @@ const mongoStore = require('../mongoose');
 const router = express.Router();
 const __dir = 'public';
 
+
+router.get('/adduser', function (req, res) {
+	res.sendFile('register.html', {root: __dir});
+});
 // TODO Separate Email to it's own micro-service
 router.post('/adduser', function (req, res) {
 	let user_req = req.body; // username, password, email
