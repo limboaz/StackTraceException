@@ -49,13 +49,7 @@ router.post('/add', function (req, res) {
     if (!req.session.userId)
         return res.json({status: "error", error: "User not logged in."});
     req.body.media = null;
-    console.log(req.body);
-    req.body.tags = req.body.tags.value.split(',');
-    console.log(req.body.tags)
     let question = new Question(req.body);
-    // question.tags = req.body.tags.value.split(',');
-    console.log("Let's check tags")
-    console.log(tags)
     question.user = req.session.userId;
     question.save(function (err, question) {
         if (err) return res.json({status: "error", error: err.toString()});
