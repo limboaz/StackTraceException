@@ -34,15 +34,15 @@ router.post('/verify', function (req, res) {
 });
 
 router.get('/verify', function (req, res) {
-	res.sendFile('verification.html', {root: __dir});
-	// let email = req.query.email;
-	// let key = req.query.key;
-	// verify_user(email, key).then(function (value) {
-	// 	if (value)
-	// 		res.json({status: "OK"});
-	// 	else
-	// 		res.json({status: "error", error: "Verify user error in GET"});
-	// });
+	//res.sendFile('verification.html', {root: __dir});
+	let email = req.query.email;
+	let key = req.query.key;
+	verify_user(email, key).then(function (value) {
+		if (value)
+			res.json({status: "OK"});
+		else
+			res.json({status: "error", error: "Verify user error in GET"});
+	});
 });
 
 router.get('/login', function (req, res) {
