@@ -85,12 +85,7 @@ router.post('/search', function(req, res){
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
 	let accepted = req.body.accepted === true;
-	let words = req.body.q.split(' ');
-	let expr = '(' + words[0] + ')';
-	for (let i = 1; i < words.length; i++){
-		expr += '|(' + words[i] + ')';
-	}
-	let query_string = req.body.q ? new RegExp(".*\\s" + expr + "\\s.*") : /.*/;
+	let query_string = req.body.q ? new RegExp(".*\\s" + req.body.q + "\\s.*") : /.*/;
 
 	console.log(req.body, accepted, limit, timestamp, query_string);
 	// build query
@@ -98,8 +93,11 @@ router.post('/search', function(req, res){
 		find({
 			// find with timestamp less than or equal to timestamp
 			timestamp: {$lte: timestamp},
+			$text: {
+				$search : req.body.q,
+				$caseSensitive: false
+			}
 		}).
-		or([{title: query_string}, {body: query_string}]).
 		// retrieve the latest ones
 		sort({timestamp: 'descending'}).
 		limit(limit).

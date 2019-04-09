@@ -35,5 +35,6 @@ const questionSchema = new Schema({
 
 });
 
+questionSchema.index({title: 'text', body: 'text'});
 
 module.exports = mongoose.model('Question', questionSchema);
