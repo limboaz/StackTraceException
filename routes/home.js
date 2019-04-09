@@ -85,10 +85,11 @@ router.post('/search', function(req, res){
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
 	let accepted = req.body.accepted === true;
-	let query_string = req.body.q ? new RegExp(".*\\s" + req.body.q + "\\s.*") : /.*/;
-
-	console.log(req.body, accepted, limit, timestamp, query_string);
+	
+	console.log(req.body, accepted, limit, timestamp);
+	
 	// build query
+	if (req.body.q){
 	let query = Question.
 		find({
 			// find with timestamp less than or equal to timestamp
@@ -97,9 +98,13 @@ router.post('/search', function(req, res){
 				$search : req.body.q,
 				$caseSensitive: false
 			}
-		}).
-		// retrieve the latest ones
-		sort({timestamp: 'descending'}).
+		})
+} else {
+	let query = Question.find({
+		timestamp: {$lte :timestamp}
+}
+}		// retrieve the latest ones
+	query.sort({timestamp: 'descending'}).
 		limit(limit).
 		populate({
 			// only select the username and reputation
