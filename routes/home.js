@@ -26,13 +26,7 @@ router.post('/verify', function (req, res) {
 	let email = req.body.email;
 	let key = req.body.key;
 	console.log(email, key);
-	verify_user(email, key).then(function (value) {
-		console.log(value);
-		if (value)
-			res.json({status: "OK"});
-		else
-			res.json({status:"error", error: "Verify user error in POST"});
-	});
+	verify_user(email, key, res);
 });
 
 router.get('/verify', function (req, res) {
@@ -40,12 +34,7 @@ router.get('/verify', function (req, res) {
 	let email = req.query.email;
 	let key = req.query.key;
 	console.log(email, key);
-	verify_user(email, key).then(function (value) {
-		if (value)
-			res.json({status: "OK"});
-		else
-			res.json({status: "error", error: "Verify user error in GET"});
-	});
+	verify_user(email, key, res);
 });
 
 router.get('/login', function (req, res) {
@@ -152,9 +141,8 @@ function send_email(user, res){
 	});
 }
 
-async function verify_user(em, key) {
-	let found = false;
-	await User.find({email: em}, function (err, users) {
+function verify_user(em, key, res) {
+	User.find({email: em}, function (err, users) {
 		if (err) return console.error(err);
 		for (let i = 0; i < users.length; i++) {
 			if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
@@ -164,11 +152,11 @@ async function verify_user(em, key) {
 					if (err) return console.log(err);
 					console.log("success validated " + user.username);
 				});
-				found = true;
+				return res.json({status: "OK"});
 			}
 		}
+		return res.json({status: "error", error: "Error verifying user"});
 	});
-	return found;
 }
 
 // Characters available for key generation
