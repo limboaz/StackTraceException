@@ -1,6 +1,5 @@
 const express = require('express');
 const request = require('request');
-const Question = require('../models/question');
 const handlebars = require('handlebars');
 const router = express.Router();
 const __dir = 'public';

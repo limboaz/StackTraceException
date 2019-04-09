@@ -21,7 +21,7 @@ const questionSchema = new Schema({
 		ref: 'History',
 		default: function(){
 			let hist = new History();
-			hist.save((err, hist) => console.log(err, hist));
+			hist.save();
 			return hist._id;
 		}
 	},

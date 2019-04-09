@@ -87,7 +87,7 @@ router.post('/search', function(req, res){
 	let accepted = req.body.accepted === true;
 	let query_string = req.body.q ? new RegExp(".*" + req.body.q + ".*") : /.*/;
 
-	console.log(req.body, accepted, limit, timestamp);
+	console.log(req.body, accepted, limit, timestamp, query_string);
 	// build query
 	let query = Question.
 		find({
@@ -106,10 +106,11 @@ router.post('/search', function(req, res){
 		select('-answers -history_id -_id -__v'); // don't select the answers property of question
 	if (accepted)
 		query.exists('accepted_answer_id', true);
-
 	// execute query and return result
 	query.exec(function(err, result){
 		if (err) return res.json({status: "error", error: err.toString()});
+		console.log(result.length);
+		result.forEach((e) => console.log(e.title));
 		res.json({status:"OK", questions:result});
 	});
 });
