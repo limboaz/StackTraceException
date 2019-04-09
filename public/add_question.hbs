@@ -12,7 +12,7 @@
         function result(json){
             let id = json.id;
 
-            window.location.replace('http://localhost:3000/quest/' + id);
+            window.location.replace('http://' + window.location.hostname + '/quest/' + id);
         }
 
         function add_question() {
