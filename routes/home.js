@@ -25,7 +25,9 @@ router.post('/adduser', function (req, res) {
 router.post('/verify', function (req, res) {
 	let email = req.body.email;
 	let key = req.body.key;
+	console.log(email, key);
 	verify_user(email, key).then(function (value) {
+		console.log(value);
 		if (value)
 			res.json({status: "OK"});
 		else
@@ -37,6 +39,7 @@ router.get('/verify', function (req, res) {
 	//res.sendFile('verification.html', {root: __dir});
 	let email = req.query.email;
 	let key = req.query.key;
+	console.log(email, key);
 	verify_user(email, key).then(function (value) {
 		if (value)
 			res.json({status: "OK"});
