@@ -22,7 +22,7 @@ function results(json){
 	let odiv = '<li class="list-group-item">';
 	let cdiv = '</li>';
 	for (let i = 0; i < questions.length; i++){
-		results.append(odiv + link('/quest/' + questions[i].id, questions[i].title) + cdiv);
+		results.append(odiv + link('/q/' + questions[i].id, questions[i].title) + cdiv);
 	}
 }
 
