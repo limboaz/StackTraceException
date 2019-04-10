@@ -96,7 +96,8 @@ router.post('/search', function (req, res) {
 			timestamp: {$lte: timestamp},
 			$text: {
 				$search: req.body.q,
-				$caseSensitive: false
+				$caseSensitive: false,
+				$language: "none"
 			}
 		})
 	} else {

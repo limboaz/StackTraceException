@@ -35,6 +35,6 @@ const questionSchema = new Schema({
 
 });
 
-questionSchema.index({title: 'text', body: 'text'});
+questionSchema.index({title: 'text', body: 'text'}, {default_language: "none"});
 
 module.exports = mongoose.model('Question', questionSchema);
