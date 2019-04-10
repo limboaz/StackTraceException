@@ -20,6 +20,7 @@
             <button class="col-sm-auto btn btn-danger my-2 my-sm-0" style="margin-right: 5px" onclick="delete_question()">Delete Question</button>
             <button href="/logout" class="col-sm-auto btn btn-info" onclick="logout()">Logout</button>
         {{else}}
+            <a href="/adduser" class="col-sm-auto btn btn-info">Sign-Up</a>
             <a href="/login" class="col-sm-auto btn btn-info">Login</a>
         {{/if}}
     </nav>
@@ -27,7 +28,7 @@
         <h4>{{question.title}}</h4>
         <a class="badge badge-pill badge-secondary"
            href={{user_url question.user.username}}>- {{question.user.username}}</a>
-        <h6> {{question.body}} </h6>
+        <h6> {{{question.body}}} </h6>
         {{#each question.tags}}
             <a href="#" style="margin-left: 3px; margin-right: 3px;" class="badge badge-pill badge-info">#{{this}}</a>
         {{/each}}
@@ -42,7 +43,7 @@
         <ul class="list-group answers">
             {{#each answers}}
                 <li class="list-group-item">
-                    <h6>{{this.body}}</h6>
+                    <h6>{{{this.body}}}</h6>
                     <a href={{user_url this.user}}>- {{this.user}}</a>
                 </li>
             {{/each}}
