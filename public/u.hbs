@@ -1,0 +1,56 @@
+<html>
+
+<head>
+    <title>{{username}}</title>
+
+    <!-- CSS -->
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="stylesheets/main.css" type="text/css" rel="stylesheet">
+
+    <!-- JavaScript -->
+    <script src="javascript/jquery.min.js"></script>
+    <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script src="javascript/index.js"></script>
+</head>
+
+<body>
+<div id="main_content" class="container">
+    <nav class="row">
+        <h3 class="col">Stack Trace Exception</h3>
+        {{#if logged_in}}
+            <button href="/logout" class="col-sm-auto btn btn-info" onclick="logout()">Logout</button>
+        {{else}}
+            <a href="/login" class="col-sm-auto btn btn-info">Login</a>
+        {{/if}}
+    </nav>
+    <div>
+        <h4>Email: {{user.email}}</h4>
+        <h4>Reputation: {{user.reputation}}</h4>
+    </div>
+    <div id="questions">
+        <h5>Questions this user asked: </h5>
+        <ul class="list-group questions">
+            {{#each questions}}
+                <li class="list-group-item">
+                    <h6>{{this.body}}</h6>
+                    <a href={{user_url username}}>- {{username}}</a>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+    <div id="answers">
+        <h5>Answers from this user: </h5>
+        <ul class="list-group answers">
+            {{#each answers}}
+                <li class="list-group-item">
+                    <h6>{{this.title}}</h6>
+                    <p>{{this.answer}}</p>
+                    <a href={{user_url username}}>- {{username}}</a>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+</div>
+</body>
+
+</html>
