@@ -1,5 +1,3 @@
-var answer
-
 function result(json){
     if (json.status !== 'OK') return alert(json.error);
     let list = $('.list-group');

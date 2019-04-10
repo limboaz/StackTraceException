@@ -10,14 +10,30 @@
     <!-- JavaScript -->
     <script src="javascript/jquery.min.js"></script>
     <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script>
+        function on_login(json){
+        	if (json.status !== 'OK') return alert(json.error);
+			window.location.replace('http://' + window.location.hostname);
+        }
+
+        function login(){
+            let form = {username: $('.user').val(), password: $('.pass').val()};
+        	$.ajax({
+                url: '/login',
+                type: 'POST',
+				data: form,
+                success: on_login
+			});
+        }
+    </script>
 </head>
 <body>
 <div id="main_content" class="container">
 <h3>Welcome to StackTraceException</h3>
     <div>
-    <form method="post" target="_blank">
-        UserName: <input type="text" name="username"><br>
-        Password: <input type="text" name="password"><br>
+    <form method="post" target="" onsubmit="login();return false;">
+        <input type="text" placeholder="Username" class="user form-control mr-sm-2" name="username"><br>
+        <input type="text" placeholder="Password" class="pass form-control mr-sm-2" name="password"><br>
         <input class="btn btn-success my-2 my-sm-0" type="submit" value="Submit">
     </form></div>
 </div>

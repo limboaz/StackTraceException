@@ -37,16 +37,12 @@ router.get('/verify', function (req, res) {
 	verify_user(email, key, res);
 });
 
-router.get('/login', function (req, res) {
-	res.sendFile('login.html', {root: __dir});
-});
-
 router.post('/login', function (req, res) {
 	const name = req.body.username;
 	const pass = req.body.password;
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
-			res.json({status: "error", error: err ? err.toString() : "Invalid user"});
+			res.json({status: "error", error: err ? err.toString() : "Invalid username or password"});
 			return console.log(err);
 		}
 		let psid = user.sid;
@@ -67,14 +63,7 @@ router.post('/login', function (req, res) {
 		res.json({status: "OK"});
 	});
 });
-router.get('/logout', function (req, res) {
-	res.render('logout', {user_name: req.session.username, logged_in: req.session.userId !== undefined})
-});
-router.get('/log-out', function (req, res) {
-	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
-	res.clearCookie('STE');
-	res.json({status: "OK"});
-});
+
 router.post('/logout', function (req, res) {
 	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
 	res.clearCookie('STE');

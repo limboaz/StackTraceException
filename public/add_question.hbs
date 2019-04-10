@@ -45,9 +45,9 @@
     <div>
         {{#if logged_in}}
             <form method="post" onsubmit="add_question();return false">
-                Title: <input type="text" name="title" id="title"><br>
-                Body: <input type="text" name="body" id="body"><br>
-                Tags: <input type="text" name="tags" id="tags"><br>
+                Title: <input type="text" class="form-control mr-sm-2" name="title" id="title"><br>
+                Body: <input type="text" class="form-control mr-sm-2" name="body" id="body"><br>
+                Tags: <input type="text" class="form-control mr-sm-2" name="tags" id="tags"><br>
                 <input class="btn btn-success my-2 my-sm-0" type="submit" value="Submit">
             </form>
         {{else}}

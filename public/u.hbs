@@ -17,10 +17,11 @@
 <body>
 <div id="main_content" class="container">
     <nav class="row">
-        <h3 class="col">Stack Trace Exception</h3>
+        <a href="/" class="col"><h3>Stack Trace Exception</h3></a>
         {{#if logged_in}}
             <button href="/logout" class="col-sm-auto btn btn-info" onclick="logout()">Logout</button>
         {{else}}
+            <a href="/adduser" class="col-sm-auto btn btn-info" style="margin-right: 5px">Sign-Up</a>
             <a href="/login" class="col-sm-auto btn btn-info">Login</a>
         {{/if}}
     </nav>
