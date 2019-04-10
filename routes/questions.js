@@ -6,9 +6,6 @@ const router = express.Router();
 const __dir = 'public';
 
 router.get('/:id', function (req, res) {
-    console.log("We are in questions id");
-    console.log(req.params.id);
-
     Question.findOne({id: req.params.id}, function (err, quest) {
         if (err || !quest)
             return res.json({status: "error", error: err ? err.toString() : "Question not found"});
@@ -36,7 +33,6 @@ function send_question(quest, req, res) {
     }).select('-answers -_id -history_id -__v').exec(function (err, quest) {
         if (err || !quest)
             return res.json({status: "error", error: err ? err.toString() : "Question not found"});
-        console.log(quest);
         res.json({status: "OK", question: quest});
     });
 }
