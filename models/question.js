@@ -21,7 +21,7 @@ const questionSchema = new Schema({
 		ref: 'History',
 		default: function(){
 			let hist = new History();
-			hist.save((err, hist) => console.log(err, hist));
+			hist.save();
 			return hist._id;
 		}
 	},
@@ -35,5 +35,6 @@ const questionSchema = new Schema({
 
 });
 
+questionSchema.index({title: 'text', body: 'text'});
 
 module.exports = mongoose.model('Question', questionSchema);

@@ -8,25 +8,47 @@
     <!-- JavaScript -->
     <script src="javascript/jquery.min.js"></script>
     <script src="javascript/bootstrap.bundle.min.js"></script>
+    <script>
+        function result(json){
+            let id = json.id;
+
+            window.location.replace('http://' + window.location.hostname + '/quest/' + id);
+        }
+
+        function add_question() {
+            let title = $('#title').val();
+            let tags = $('#tags').val().split(',');
+            let body = $('#body').val();
+            let params = {title: title, body: body, tags: tags};
+            $.ajax({
+                url: '/questions/add',
+                type: 'POST',
+                data: JSON.stringify(params),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: result
+            })
+        }
+    </script>
 </head>
 
 <body>
 <div id="main_content" class="container">
     <h3>StackTraceException</h3>
     <div>
-            {{#if logged_in}}
-                <p>Hi, {{user_name}}. Enter your question here:</p>
-            {{else}}
-                <p>Please, login.</p>
-            {{/if}}
+        {{#if logged_in}}
+            <p>Hi, {{user_name}}. Enter your question here:</p>
+        {{else}}
+            <p>Please, login.</p>
+        {{/if}}
     </div>
     <div>
         {{#if logged_in}}
-            <form method="post" target="_blank">
-                Title: <input type="text" name="title"><br>
-                Body: <input type="text" name="body"><br>
-                Tags: <input type="text" name="tags"><br>
-                <input class="btn btn-success my-2 my-sm-0"  type="submit" value="Submit">
+            <form method="post" onsubmit="add_question();return false">
+                Title: <input type="text" name="title" id="title"><br>
+                Body: <input type="text" name="body" id="body"><br>
+                Tags: <input type="text" name="tags" id="tags"><br>
+                <input class="btn btn-success my-2 my-sm-0" type="submit" value="Submit">
             </form>
         {{else}}
             <a href="/login" class="col-sm-auto btn btn-info">Log In</a>

@@ -16,7 +16,7 @@ router.post('/adduser', function (req, res) {
 	let user = new User(user_req);
 	user.enabled = random_key();
 	user.save(function (err, user) {
-		if (err) return res.json({status:"error", error: err.toString()});
+		if (err) return res.json({status: "error", error: err.toString()});
 		console.log("success created user " + user.username);
 		send_email(user, res);
 	});
@@ -25,24 +25,16 @@ router.post('/adduser', function (req, res) {
 router.post('/verify', function (req, res) {
 	let email = req.body.email;
 	let key = req.body.key;
-	verify_user(email, key).then(function (value) {
-		if (value)
-			res.json({status: "OK"});
-		else
-			res.json({status:"error", error: "Verify user error in POST"});
-	});
+	console.log(email, key);
+	verify_user(email, key, res);
 });
 
 router.get('/verify', function (req, res) {
-	res.sendFile('verification.html', {root: __dir});
-	// let email = req.query.email;
-	// let key = req.query.key;
-	// verify_user(email, key).then(function (value) {
-	// 	if (value)
-	// 		res.json({status: "OK"});
-	// 	else
-	// 		res.json({status: "error", error: "Verify user error in GET"});
-	// });
+	//res.sendFile('verification.html', {root: __dir});
+	let email = req.query.email;
+	let key = req.query.key;
+	console.log(email, key);
+	verify_user(email, key, res);
 });
 
 router.get('/login', function (req, res) {
@@ -76,7 +68,7 @@ router.post('/login', function (req, res) {
 	});
 });
 router.get('/logout', function (req, res) {
-	res.render('logout', {user_name: req.session.username,logged_in: req.session.userId !== undefined})
+	res.render('logout', {user_name: req.session.username, logged_in: req.session.userId !== undefined})
 });
 router.get('/log-out', function (req, res) {
 	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
@@ -89,40 +81,47 @@ router.post('/logout', function (req, res) {
 	res.json({status: "OK"});
 });
 
-router.post('/search', function(req, res){
+router.post('/search', function (req, res) {
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
 	let accepted = req.body.accepted === true;
-	let query_string = req.body.q ? new RegExp(".*" + req.body.q + ".*") : /.*/;
 
 	console.log(req.body, accepted, limit, timestamp);
+	let query;
+
 	// build query
-	let query = Question.
-		find({
+	if (req.body.q) {
+		query = Question.find({
 			// find with timestamp less than or equal to timestamp
 			timestamp: {$lte: timestamp},
-		}).
-		or([{title: query_string}, {body: query_string}]).
-		// retrieve the latest ones
-		sort({timestamp: 'descending'}).
-		limit(limit).
-		populate({
-			// only select the username and reputation
-			path: 'user',
-			select: 'username reputation -_id'
-		}).
-		select('-answers -history_id -_id -__v'); // don't select the answers property of question
+			$text: {
+				$search: req.body.q,
+				$caseSensitive: false
+			}
+		})
+	} else {
+		query = Question.find({
+			timestamp: {$lte: timestamp}
+		});
+	}		// retrieve the latest ones
+
+	query.sort({timestamp: 'descending'}).limit(limit).populate({
+		// only select the username and reputation
+		path: 'user',
+		select: 'username reputation -_id'
+	}).select('-answers -history_id -_id -__v'); // don't select the answers property of question
 	if (accepted)
 		query.exists('accepted_answer_id', true);
-
 	// execute query and return result
-	query.exec(function(err, result){
+	query.exec(function (err, result) {
 		if (err) return res.json({status: "error", error: err.toString()});
-		res.json({status:"OK", questions:result});
+		console.log(result.length);
+		result.forEach((e) => console.log(e.title));
+		res.json({status: "OK", questions: result});
 	});
 });
 
-function send_email(user, res){
+function send_email(user, res) {
 	let transporter = nodemailer.createTransport({
 		host: 'localhost',
 		port: 25,
@@ -136,7 +135,7 @@ function send_email(user, res){
 		to: user.email,
 		subject: 'Verifying your Tic Tac Toe account',
 		text: 'validation key:<' + user.enabled + '>\n' +
-			  'Or click on this link to verify your account http://152.44.36.183/verify?email=' + user.email + "&key=" + user.enabled
+			'Or click on this link to verify your account http://152.44.36.183/verify?email=' + user.email + "&key=" + user.enabled
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
@@ -149,9 +148,8 @@ function send_email(user, res){
 	});
 }
 
-async function verify_user(em, key) {
-	let found = false;
-	await User.find({email: em}, function (err, users) {
+function verify_user(em, key, res) {
+	User.find({email: em}, function (err, users) {
 		if (err) return console.error(err);
 		for (let i = 0; i < users.length; i++) {
 			if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
@@ -161,11 +159,11 @@ async function verify_user(em, key) {
 					if (err) return console.log(err);
 					console.log("success validated " + user.username);
 				});
-				found = true;
+				return res.json({status: "OK"});
 			}
 		}
+		return res.json({status: "error", error: "Error verifying user"});
 	});
-	return found;
 }
 
 // Characters available for key generation
