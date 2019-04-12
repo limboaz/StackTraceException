@@ -153,6 +153,7 @@ router.post('/:id/upvote', function (req, res) {
             upvote = upvote ? 1 : -1;
             question.score += upvote;
             question.user.reputation += upvote;
+            question.save(() => res.json({status: "OK"}))
         })
 });
 
