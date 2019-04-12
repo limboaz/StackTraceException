@@ -41,7 +41,6 @@ function send_question(quest, req, res) {
 router.post('/add', function (req, res) {
     if (!req.session.userId)
         return res.json({status: "error", error: "User not logged in."});
-    req.body.media = null;
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.save(function (err, question) {
