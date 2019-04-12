@@ -126,6 +126,7 @@ router.delete('/:id', function (req, res) {
 router.post('/:id/upvote', function (req, res) {
     if (!req.session.userId) return res.json({status: "error"});
     let upvote = req.body.upvote === undefined ? true : req.body.upvote;
+    upvote = upvote ? 1 : -1;
 
     Question.findOne({id: req.params.id})
         .populate('user')
@@ -141,19 +142,28 @@ router.post('/:id/upvote', function (req, res) {
             if (index === -1)
                 question.votes.push({id: req.session.userId, vote: upvote});
             else {
+                let u_vote = question.votes[index];
                 // If I already voted then undo that vote
-                if (question.votes[index].vote) {
-                    upvote = !question.votes[index].vote;
-                    question.votes[index].vote = undefined;
+                if (u_vote.vote !== 0) {
+                    if (u_vote.vote === upvote) {
+                        upvote = (-1) * u_vote.vote;
+                        u_vote.vote = 0;
+                    } else {
+                        upvote *= 2;
+                        u_vote.vote *= -1;
+                    }
                 }
                 else // Set my vote to the new vote
-                    question.votes[index].vote = upvote;
+                    u_vote.vote = upvote;
             }
-
-            upvote = upvote ? 1 : -1;
             question.score += upvote;
-            question.user.reputation += upvote;
-            question.save(() => res.json({status: "OK"}))
+            let user = question.user;
+            user.real_reputation += upvote;
+            if (user.real_reputation < 1)
+                user.reputation = 1;
+            else
+                user.reputation = user.real_reputation;
+            user.save(() => question.save(() => res.json({status: "OK"})));
         })
 });
 

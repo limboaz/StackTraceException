@@ -29,7 +29,7 @@ const questionSchema = new Schema({
 		ips: [],
 		users: []
 	},
-	votes : [],
+	votes : [{id: String, vote: Number}],
 	timestamp: {
 		type: Number,
 		default: () => Math.floor(Date.now() / 1000) // Date in unix time, Date.now returns in milliseconds so need seconds ID
