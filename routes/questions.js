@@ -30,16 +30,13 @@ function send_question(quest, req, res) {
     Question.findOne({id: req.params.id}).populate({
         path: 'user',
         select: 'username reputation -_id'
-    }).select('-answers -_id -history_id -__v').exec(function (err, quest) {
+    }).select('-answers -_id -history_id -votes -history -__v').exec(function (err, quest) {
         if (err || !quest)
             return res.json({status: "error", error: err ? err.toString() : "Question not found"});
         res.json({status: "OK", question: quest});
     });
 }
 
-router.get('/add', function (req, res) {
-    res.render(res.render('add_question', {user_name: req.session.username, logged_in: req.session.userId !== undefined}))
-});
 //create new question
 router.post('/add', function (req, res) {
     if (!req.session.userId)
@@ -124,6 +121,39 @@ router.delete('/:id', function (req, res) {
             });
         }
     });
+});
+
+router.post('/:id/upvote', function (req, res) {
+    if (!req.session.userId) return res.json({status: "error"});
+    let upvote = req.body.upvote === undefined ? true : req.body.upvote;
+
+    Question.findOne({id: req.params.id})
+        .populate('user')
+        .exec(function (err, question) {
+            if (err || !question)
+                return res.json({status: "error"});
+
+            let index = question.votes.findIndex(function (element) {
+                return element.id === req.session.userId;
+            });
+
+            // Add my vote to list of votes
+            if (index === -1)
+                question.votes.push({id: req.session.userId, vote: upvote});
+            else {
+                // If I already voted then undo that vote
+                if (question.votes[index].vote) {
+                    upvote = !question.votes[index].vote;
+                    question.votes[index].vote = undefined;
+                }
+                else // Set my vote to the new vote
+                    question.votes[index].vote = upvote;
+            }
+
+            upvote = upvote ? 1 : -1;
+            question.score += upvote;
+            question.user.reputation += upvote;
+        })
 });
 
 module.exports = router;

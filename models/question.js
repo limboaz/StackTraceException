@@ -25,6 +25,11 @@ const questionSchema = new Schema({
 			return hist._id;
 		}
 	},
+	history: {
+		ips: [],
+		users: []
+	},
+	votes : [],
 	timestamp: {
 		type: Number,
 		default: () => Math.floor(Date.now() / 1000) // Date in unix time, Date.now returns in milliseconds so need seconds ID

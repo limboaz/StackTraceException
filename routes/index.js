@@ -39,6 +39,13 @@ router.get('/u/:id', function (req, res) {
     });
 });
 
+router.get('/add', function (req, res) {
+    res.render(res.render('add_question', {
+        user_name: req.session.username,
+        logged_in: req.session.userId !== undefined
+    }))
+});
+
 router.get('/login', function (req, res) {
     res.sendFile('login.html', {root: __dir});
 });
