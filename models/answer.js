@@ -9,6 +9,7 @@ const answerSchema = new Schema({
     body: {type: String, required: true},
     score: {type: Number, default: 0},
     is_accepted: {type: Boolean, default: false},
+    votes : [{id: String, vote: Number}],
     timestamp: {
         type: Number,
         default: () => Math.floor(Date.now() / 1000)
