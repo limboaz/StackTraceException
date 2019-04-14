@@ -137,31 +137,47 @@ router.post('/:id/upvote', function (req, res) {
                 return element.id === req.session.userId;
             });
 
+            let waived = false;
+            let u_vote;
             // Add my vote to list of votes
-            if (index === -1)
+            if (index === -1) {
                 question.votes.push({id: req.session.userId, vote: upvote});
-            else {
-                let u_vote = question.votes[index];
+                u_vote = question.votes[question.votes.length - 1];
+            } else {
+                u_vote = question.votes[index];
                 // If I already voted then undo that vote
                 if (u_vote.vote !== 0) {
                     if (u_vote.vote === upvote) {
                         upvote = (-1) * u_vote.vote;
                         u_vote.vote = 0;
+                    } else if (u_vote.vote === -2){
+                        // vote was waived so do not affect reputation
+                        // just revert score
+                        if (upvote === -1) {
+                            upvote = 1;
+                            waived = true;
+                            u_vote.vote = 0;
+                        } else {
+                            question.user.reputation -= 1;
+                            upvote = 2;
+                            u_vote.vote = 1;
+                        }
                     } else {
                         upvote *= 2;
                         u_vote.vote *= -1;
                     }
-                }
-                else // Set my vote to the new vote
+                } else // Set my vote to the new vote
                     u_vote.vote = upvote;
             }
+
             question.score += upvote;
             let user = question.user;
-            user.real_reputation += upvote;
-            if (user.real_reputation < 1)
+            if (user.reputation + upvote < 1) {
+                u_vote.vote = -2;
                 user.reputation = 1;
-            else
-                user.reputation = user.real_reputation;
+            }  else if (!waived)
+                user.reputation += upvote;
+            user.real_reputation += upvote;
             user.save(() => question.save(() => res.json({status: "OK"})));
         })
 });
