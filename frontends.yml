@@ -1,0 +1,45 @@
+---
+- hosts: frontends
+  remote_user: root
+
+  tasks:
+    - name: ensure node is installed
+      shell: dpkg -s nodejs
+      register: result
+      ignore_errors: True
+
+    - name: install nodejs
+      shell: curl -sL https://deb.nodesource.com/setup_11.x | bash -
+      notify: nodejs installation
+      when: result.rc == 1
+
+    - name: install pm2
+      npm:
+        name: pm2
+        version: '3.4.0'
+        global: yes
+      notify: start pm2
+
+    - name: clone project
+      git:
+        repo: git@github.com:limboaz/StackTraceException.git
+        dest: ~/StackTraceException
+        accept_hostkey: yes
+        update: yes
+      notify: restart project
+
+    - name: install npm modules
+      shell: cd ~/StackTraceException && npm install
+
+  handlers:
+    - name: nodejs installation
+      apt:
+        name: nodejs
+        state: present
+
+    - name: start pm2
+      shell: pm2 start
+
+    - name: restart project
+      shell: cd ~/StackTraceException && pm2 start bin/www
+...

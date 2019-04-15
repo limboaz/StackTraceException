@@ -1,0 +1,9 @@
+[frontends]
+209.50.56.141 ansible_python_interpreter=/usr/bin/python3
+152.44.36.183 ansible_python_interpreter=/usr/bin/python3
+
+[loadbalancer]
+152.44.41.174 ansible_python_interpreter=/usr/bin/python3
+
+[databases]
+152.44.36.51 ansible_python_interpreter=/usr/bin/python3
