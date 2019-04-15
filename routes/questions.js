@@ -1,15 +1,16 @@
 const express = require('express');
 const Answer = require('../models/answer');
 const Question = require('../models/question');
-const History = require('../models/history');
+const filter = require('../filter');
 const router = express.Router();
-const __dir = 'public';
 
 router.get('/:id', function (req, res) {
-    Question.findOne({id: req.params.id}, function (err, quest) {
-        if (err || !quest)
-            return res.json({status: "error", error: err ? err.toString() : "Question not found"});
-        History.findById(quest.history_id, function (err, history) {
+    Question.findOne({id: req.params.id})
+        .populate({path: 'user', select: 'username reputation -_id'})
+        .exec(function (err, quest) {
+            if (err || !quest)
+                return res.json({status: "error", error: err ? err.toString() : "Question not found"});
+            let history = quest.history;
             if (!req.session.userId) {
                 let ip = req.connection.remoteAddress;
                 if (!history.ips.includes(ip)) {
@@ -20,22 +21,11 @@ router.get('/:id', function (req, res) {
                 quest.view_count++;
                 history.users.push(req.session.userId);
             }
-            quest.save().then((quest) => send_question(quest, req, res));
-            history.save();
+            let filtered = filter(quest._doc,[],['answers', '_id', 'votes', 'history', '__v']);
+            res.json({status: "OK", question: filtered});
+            quest.save();
         });
-    });
 });
-
-function send_question(quest, req, res) {
-    Question.findOne({id: req.params.id}).populate({
-        path: 'user',
-        select: 'username reputation -_id'
-    }).select('-answers -_id -history_id -votes -history -__v').exec(function (err, quest) {
-        if (err || !quest)
-            return res.json({status: "error", error: err ? err.toString() : "Question not found"});
-        res.json({status: "OK", question: quest});
-    });
-}
 
 //create new question
 router.post('/add', function (req, res) {
@@ -99,7 +89,7 @@ router.delete('/:id', function (req, res) {
             res.status(400).json({status: "error 400", error: err.toString()});
             return console.log(err.toString());
         }
-        if (question.user.toString() !== req.session.userId.toString()) {
+        if (question.user.toString() !== req.session.userId) {
             res.status(401).json({status: "error 401", error: "You are not authorized to perform this operation."});
             return console.log("You are not authorized to perform this operation.");
         } else {
@@ -150,7 +140,7 @@ router.post('/:id/upvote', function (req, res) {
                     if (u_vote.vote === upvote) {
                         upvote = (-1) * u_vote.vote;
                         u_vote.vote = 0;
-                    } else if (u_vote.vote === -2){
+                    } else if (u_vote.vote === -2) {
                         // vote was waived so do not affect reputation
                         // just revert score
                         if (upvote === -1) {
@@ -175,7 +165,7 @@ router.post('/:id/upvote', function (req, res) {
             if (user.reputation + upvote < 1) {
                 u_vote.vote = -2;
                 user.reputation = 1;
-            }  else if (!waived)
+            } else if (!waived)
                 user.reputation += upvote;
             user.real_reputation += upvote;
             user.save(() => question.save(() => res.json({status: "OK"})));

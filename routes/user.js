@@ -3,7 +3,6 @@ const User = require('../models/user');
 const Question = require('../models/question');
 const Answer = require('../models/answer');
 const router = express.Router();
-const __dir = 'public';
 
 router.get('/:username', function(req, res){
 	User.findOne({username: req.params.username}, function(err, user){
@@ -16,7 +15,7 @@ router.get('/:username', function(req, res){
 router.get('/:username/questions', function(req, res){
 	User.findOne({username: req.params.username}, function(err, user){
 		if (err || !user)
-			return resjson({status: "error", error: err ? err.toString() : "User not found"});
+			return res.json({status: "error", error: err ? err.toString() : "User not found"});
 
 		Question.find({user: user._id}, function(err, questions){
 			if (err)
@@ -32,15 +31,15 @@ router.get('/:username/questions', function(req, res){
 router.get('/:username/answers', function(req, res){
 	User.findOne({username: req.params.username}, function(err, user){
 		if (err || !user)
-			return res.status(404).json({status: "error", error: err ? err.toString() : "User not found"});
+			return res.json({status: "error", error: err ? err.toString() : "User not found"});
 
 		Answer.find({user: req.params.username}, function(err, answers){
 			if (err)
-				return res.status(400).json({status : "error", error : err.toString()});
+				return res.json({status : "error", error : err.toString()});
 
 			let ids = [];
 			answers.forEach((a) => ids.push(a.id));
-			res.status(200).json({status: "OK", answers: ids});
+			res.json({status: "OK", answers: ids});
 		});
 	});
 });

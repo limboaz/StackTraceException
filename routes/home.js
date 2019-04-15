@@ -99,7 +99,7 @@ router.post('/search', function (req, res) {
 		// only select the username and reputation
 		path: 'user',
 		select: 'username reputation -_id'
-	}).select('-answers -history_id -history -votes -_id -__v'); // don't select the answers property of question
+	}).select('-answers -history -votes -_id -__v'); // don't select the answers property of question
 	if (accepted)
 		query.exists('accepted_answer_id', true);
 	// execute query and return result
