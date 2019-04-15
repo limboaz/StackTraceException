@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const History = require('./history');
 const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
@@ -16,15 +15,6 @@ const questionSchema = new Schema({
 	score: {type: Number, default: 0},
 	view_count: {type: Number, default: 0},
 	answer_count: {type: Number, default: 0},
-	history_id: {
-		type: Schema.Types.ObjectId,
-		ref: 'History',
-		default: function(){
-			let hist = new History();
-			hist.save();
-			return hist._id;
-		}
-	},
 	history: {
 		ips: [],
 		users: []
