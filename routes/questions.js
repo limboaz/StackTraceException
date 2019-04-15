@@ -2,7 +2,10 @@ const express = require('express');
 const Answer = require('../models/answer');
 const Question = require('../models/question');
 const filter = require('../filter');
+const search = require('../binary-search');
 const router = express.Router();
+
+let compare = function (a, b) {return a.localeCompare(b)};
 
 router.get('/:id', function (req, res) {
     Question.findOne({id: req.params.id})
@@ -10,19 +13,30 @@ router.get('/:id', function (req, res) {
         .exec(function (err, quest) {
             if (err || !quest)
                 return res.json({status: "error", error: err ? err.toString() : "Question not found"});
+
             let history = quest.history;
+            let result, arr, insert;
+
             if (!req.session.userId) {
                 let ip = req.connection.remoteAddress;
-                if (!history.ips.includes(ip)) {
+                result = search(history.ips, compare, ip);
+                if (!result.found) {
                     quest.view_count++;
-                    history.ips.push(ip);
+                    arr = history.ips;
+                    insert = ip;
                 }
-            } else if (!history.users.includes(req.session.userId)) {
+            } else if (!(result = search(history.users, compare, req.session.userId)).found) {
                 quest.view_count++;
-                history.users.push(req.session.userId);
+                arr = history.users;
+                insert = req.session.userId;
             }
+
             let filtered = filter(quest._doc,[],['answers', '_id', 'votes', 'history', '__v']);
             res.json({status: "OK", question: filtered});
+
+            if (!result.found)
+                arr.splice(result.c == -1 ? result.index : result.index + 1, 0, insert);
+
             quest.save();
         });
 });
