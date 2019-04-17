@@ -4,6 +4,8 @@ const Question = require('../models/question');
 const filter = require('../filter');
 const search = require('../binary-search');
 const router = express.Router();
+const multer = require('multer');
+var upload = multer();
 
 let compare = function (a, b) {return a.localeCompare(b)};
 
@@ -35,7 +37,7 @@ router.get('/:id', function (req, res) {
             res.json({status: "OK", question: filtered});
 
             if (!result.found)
-                arr.splice(result.c == -1 ? result.index : result.index + 1, 0, insert);
+                arr.splice(result.c === -1 ? result.index : result.index + 1, 0, insert);
 
             quest.save();
         });
