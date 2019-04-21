@@ -17,7 +17,7 @@ router.post('/adduser', function (req, res) {
 	user.enabled = random_key();
 	user.save(function (err, user) {
 		if (err) {
-			console.log(err.toString());
+			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
 		res.json({status:"OK"});
@@ -44,7 +44,7 @@ router.post('/login', function (req, res) {
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
 			res.status(404).json({status: "error", error: err ? err.toString() : "Invalid username or password"});
-			return console.log(err);
+			return console.error(err);
 		}
 		let psid = user.sid;
 		user.sid = req.sessionID;
@@ -52,10 +52,10 @@ router.post('/login', function (req, res) {
 		req.session.username = user.username;
 		if (psid) {
 			mongoStore.get(psid, function (err, session) {
-				if (err) console.log(err);
+				if (err) console.error(err);
 				if (session) req.session.grid = session.grid;
 				user.save(function (err) {
-					if (err) return console.log(err);
+					if (err) return console.error(err);
 					console.log("Now saving session");
 					mongoStore.set(req.sessionID, req.session);
 				});
@@ -74,9 +74,8 @@ router.post('/logout', function (req, res) {
 router.post('/search', function (req, res) {
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
-	let accepted = req.body.accepted === true;
 
-	console.log(req.body, accepted, limit, timestamp);
+	console.log(req.body, limit, timestamp);
 	let query;
 
 	// build query
@@ -96,12 +95,20 @@ router.post('/search', function (req, res) {
 		});
 	}		// retrieve the latest ones
 
-	query.sort({timestamp: 'descending'}).limit(limit).populate({
+	if (req.body.sort_by && req.body.sort_by === "timestamp")
+		query.sort({timestamp: 'descending'});
+	else query.sort({score: 'descending'});
+
+	query.limit(limit).populate({
 		// only select the username and reputation
 		path: 'user',
 		select: 'username reputation -_id'
 	}).select('-answers -history -votes -_id -__v'); // don't select the answers property of question
-	if (accepted)
+	if (req.body.tags)
+		query.all('tags', req.body.tags);
+	if (req.body.has_media)
+		query.exists('media.0', true);
+	if (req.body.accepted)
 		query.exists('accepted_answer_id', true);
 	// execute query and return result
 	query.exec(function (err, result) {
@@ -128,7 +135,7 @@ function send_email(user) {
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
-		if (error) return console.log(error);
+		if (error) return console.error(error);
 		//console.log('Message %s sent: %s', info.messageId, info.response);
 	});
 }
@@ -140,13 +147,13 @@ function verify_user(em, key, res) {
 			if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
 				users[i].enabled = "True";
 				users[i].save(function (err, user) {
-					if (err) return console.log(err);
+					if (err) return console.error(err);
 					console.log("success validated " + user.username);
 				});
 				return res.json({status: "OK"});
 			}
 		}
-		return res.json({status: "error", error: "Error verifying user"});
+		return res.status(404).json({status: "error", error: "Error verifying user"});
 	});
 }
 

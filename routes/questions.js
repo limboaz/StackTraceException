@@ -1,6 +1,7 @@
 const express = require('express');
 const Answer = require('../models/answer');
 const Question = require('../models/question');
+const cassandra = require('../cassandra');
 const filter = require('../filter');
 const search = require('../binary-search');
 const router = express.Router();
@@ -86,7 +87,7 @@ router.get('/:id/answers', function (req, res) {
     }).select('answers').exec((err, question) => {
         if (err) {
             res.status(404).json({status: "error", error: err.toString()});
-            return console.log(err.toString());
+            return console.error(err.toString());
         }
         // console.log("Populated answers + answers);
         res.json({status: 'OK', answers: question.answers});
@@ -103,7 +104,7 @@ router.delete('/:id', function (req, res) {
     Question.findOne({id: req.params.id}, function (err, question) {
         if (err) {
             res.status(400).json({status: "error 400", error: err.toString()});
-            return console.log(err.toString());
+            return console.error(err.toString());
         }
         if (question.user.toString() !== req.session.userId) {
             res.status(401).json({status: "error 401", error: "You are not authorized to perform this operation."});
@@ -112,17 +113,17 @@ router.delete('/:id', function (req, res) {
             Question.findOneAndRemove({id: req.params.id}, function (err, question) {
                 if (err) {
                     res.status(404).json({status: "error 404", error: err.toString()});
-                    return console.log(err.toString());
+                    return console.error(err.toString());
                 }
                 //remove the answers associated with it
                 Answer.deleteMany({question_id: question.id}, function (err) {
                     if (err) {
                         res.status(404).json({status: "error 404", error: err.toString()});
-                        return console.log(err.toString());
+                        return console.error(err.toString());
                     }
+                    res.status(200).json({status: "OK"});
+                    cassandra.execute(create_batch("DELETE", question.media));
                 });
-
-                res.status(200).json({status: "OK"});
             });
         }
     });
@@ -187,5 +188,17 @@ router.post('/:id/upvote', function (req, res) {
             user.save(() => question.save(() => res.json({status: "OK"})));
         })
 });
+
+let create_batch = function(statement, ids){
+  let start = "BEGIN BATCH\n";
+  let statements = "";
+
+  ids.forEach(function(id){
+      statements += statement + "FROM media WHERE id=" + id + ";\n";
+  });
+
+  let end = "APPLY BATCH;";
+  return start + statements + end;
+};
 
 module.exports = router;

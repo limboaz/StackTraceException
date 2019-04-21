@@ -14,7 +14,7 @@ const answerSchema = new Schema({
         type: Number,
         default: () => Math.floor(Date.now() / 1000)
     },
-    media: [Number]
+    media: [String]
 });
 
 
