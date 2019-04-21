@@ -16,8 +16,10 @@ router.post('/adduser', function (req, res) {
 	let user = new User(user_req);
 	user.enabled = random_key();
 	user.save(function (err, user) {
-		if (err) return res.status(404).json({status: "error", error: err.toString()});
-		console.log("success created user " + user.username);
+		if (err) {
+			console.log(err.toString());
+			return res.status(404).json({status: "error", error: err.toString()});
+		}
 		res.json({status:"OK"});
 		send_email(user, res);
 	});
@@ -26,7 +28,6 @@ router.post('/adduser', function (req, res) {
 router.post('/verify', function (req, res) {
 	let email = req.body.email;
 	let key = req.body.key;
-	console.log(email, key);
 	verify_user(email, key, res);
 });
 
@@ -34,7 +35,6 @@ router.get('/verify', function (req, res) {
 	//res.sendFile('verification.html', {root: __dir});
 	let email = req.query.email;
 	let key = req.query.key;
-	console.log(email, key);
 	verify_user(email, key, res);
 });
 
@@ -43,7 +43,7 @@ router.post('/login', function (req, res) {
 	const pass = req.body.password;
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
-			res.json({status: "error", error: err ? err.toString() : "Invalid username or password"});
+			res.status(404).json({status: "error", error: err ? err.toString() : "Invalid username or password"});
 			return console.log(err);
 		}
 		let psid = user.sid;
@@ -66,7 +66,7 @@ router.post('/login', function (req, res) {
 });
 
 router.post('/logout', function (req, res) {
-	if (!req.session.userId) return res.json({status: "error", error: "Error in logout"});
+	if (!req.session.userId) return res.status(404).json({status: "error", error: "Error in logout"});
 	res.clearCookie('STE');
 	res.json({status: "OK"});
 });
@@ -105,7 +105,7 @@ router.post('/search', function (req, res) {
 		query.exists('accepted_answer_id', true);
 	// execute query and return result
 	query.exec(function (err, result) {
-		if (err) return res.json({status: "error", error: err.toString()});
+		if (err) return res.status(404).json({status: "error", error: err.toString()});
 		console.log(result.length);
 		result.forEach((e) => console.log(e.title));
 		res.json({status: "OK", questions: result});
@@ -130,10 +130,8 @@ function send_email(user) {
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
-		if (error) {
-			return console.log(error);
-		}
-		console.log('Message %s sent: %s', info.messageId, info.response);
+		if (error) return console.log(error);
+		//console.log('Message %s sent: %s', info.messageId, info.response);
 	});
 }
 
@@ -142,7 +140,6 @@ function verify_user(em, key, res) {
 		if (err) return console.error(err);
 		for (let i = 0; i < users.length; i++) {
 			if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
-				console.log(users[i]);
 				users[i].enabled = "True";
 				users[i].save(function (err, user) {
 					if (err) return console.log(err);
