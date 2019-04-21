@@ -43,7 +43,7 @@ router.post('/login', function (req, res) {
 	const pass = req.body.password;
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
-			res.type(404).json({status: "error", error: err ? err.toString() : "Invalid username or password"});
+			res.status(404).json({status: "error", error: err ? err.toString() : "Invalid username or password"});
 			return console.log(err);
 		}
 		let psid = user.sid;
@@ -66,7 +66,7 @@ router.post('/login', function (req, res) {
 });
 
 router.post('/logout', function (req, res) {
-	if (!req.session.userId) return res.type(404).json({status: "error", error: "Error in logout"});
+	if (!req.session.userId) return res.status(404).json({status: "error", error: "Error in logout"});
 	res.clearCookie('STE');
 	res.json({status: "OK"});
 });
@@ -105,7 +105,7 @@ router.post('/search', function (req, res) {
 		query.exists('accepted_answer_id', true);
 	// execute query and return result
 	query.exec(function (err, result) {
-		if (err) return res.type(404).json({status: "error", error: err.toString()});
+		if (err) return res.status(404).json({status: "error", error: err.toString()});
 		console.log(result.length);
 		result.forEach((e) => console.log(e.title));
 		res.json({status: "OK", questions: result});
