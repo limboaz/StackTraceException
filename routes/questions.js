@@ -14,7 +14,7 @@ router.get('/:id', function (req, res) {
         .populate({path: 'user', select: 'username reputation -_id'})
         .exec(function (err, quest) {
             if (err || !quest)
-                return res.json({status: "error", error: err ? err.toString() : "Question not found"});
+                return res.type(404).json({status: "error", error: err ? err.toString() : "Question not found"});
 
             let history = quest.history;
             let result, arr, insert;
@@ -46,11 +46,11 @@ router.get('/:id', function (req, res) {
 //create new question
 router.post('/add', function (req, res) {
     if (!req.session.userId)
-        return res.json({status: "error", error: "User not logged in."});
+        return res.type(404).json({status: "error", error: "User not logged in."});
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.save(function (err, question) {
-        if (err) return res.json({status: "error", error: err.toString()});
+        if (err) return res.type(404).json({status: "error", error: err.toString()});
         console.log("successfully created questions " + question.title);
         res.json({status: "OK", id: question.id});
     });
@@ -59,16 +59,16 @@ router.post('/add', function (req, res) {
 //create new answer
 router.post('/:id/answers/add', function (req, res) {
     if (!req.session.userId)
-        return res.json({status: "error", error: "User not logged in."});
+        return res.type(404).json({status: "error", error: "User not logged in."});
     Question.findOne({id: req.params.id}, function (err, question) {
         if (err)
-            return res.json({status: "error", error: err.toString()});
+            return res.type(404).json({status: "error", error: err.toString()});
         let answer = new Answer(req.body);
         answer.question_id = question.id;
         answer.user = req.session.username;
         answer.save(function (err, answer) {
             if (err)
-                return res.json({status: "error", error: err.toString()});
+                return res.type(404).json({status: "error", error: err.toString()});
             console.log("answer generated: id = " + answer.id);
             question.answer_count++;
             question.answers.push(answer);
@@ -85,7 +85,7 @@ router.get('/:id/answers', function (req, res) {
         select: '-_id'
     }).select('answers').exec((err, question) => {
         if (err) {
-            res.json({status: "error", error: err.toString()});
+            res.type(404).json({status: "error", error: err.toString()});
             return console.log(err.toString());
         }
         // console.log("Populated answers + answers);
@@ -129,7 +129,7 @@ router.delete('/:id', function (req, res) {
 });
 
 router.post('/:id/upvote', function (req, res) {
-    if (!req.session.userId) return res.json({status: "error"});
+    if (!req.session.userId) return res.type(404).json({status: "error"});
     let upvote = req.body.upvote === undefined ? true : req.body.upvote;
     upvote = upvote ? 1 : -1;
 
@@ -137,7 +137,7 @@ router.post('/:id/upvote', function (req, res) {
         .populate('user')
         .exec(function (err, question) {
             if (err || !question)
-                return res.json({status: "error"});
+                return res.type(404).json({status: "error"});
 
             let index = question.votes.findIndex(function (element) {
                 return element.id === req.session.userId;

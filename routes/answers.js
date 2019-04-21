@@ -7,26 +7,26 @@ const router = express.Router();
 router.get('/:id', function (req, res) {
     Answer.findOne({id: req.params.id}, function (err, ans) {
         if (err || !ans)
-            return res.json({status: "error", error: err ? err.toString() : "Answer not found"});
+            return res.type(404).json({status: "error", error: err ? err.toString() : "Answer not found"});
         Question.findOne({id: ans.question_id}, function (err, quest) {
             if (err || !ans)
-                return res.json({status: "error", error: err ? err.toString() : "Question not found"});
+                return res.type(404).json({status: "error", error: err ? err.toString() : "Question not found"});
             res.json({status: "OK", question: {id: ans.question_id, title: quest.title}, answer: ans.body});
         });
     });
 });
 
 router.post('/:id/upvote', function (req, res) {
-    if (!req.session.userId) return res.json({status: "error"});
+    if (!req.session.userId) return res.type(404).json({status: "error"});
     let upvote = req.body.upvote === undefined ? true : req.body.upvote;
     upvote = upvote ? 1 : -1;
 
     Answer.findOne({id: req.params.id}, function (err, answer) {
         if (err || !answer)
-            return res.json({status: "error"});
+            return res.type(404).json({status: "error"});
         User.findOne({username: answer.user}, function (err, user) {
             if (err || !user)
-                return res.json({status: "error"});
+                return res.type(404).json({status: "error"});
             let index = answer.votes.findIndex(function (element) {
                 return element.id === req.session.userId;
             });
