@@ -1,6 +1,7 @@
 const express = require('express');
 const Answer = require('../models/answer');
 const Question = require('../models/question');
+const cassandra = require('../cassandra');
 const filter = require('../filter');
 const search = require('../binary-search');
 const router = express.Router();
@@ -120,9 +121,9 @@ router.delete('/:id', function (req, res) {
                         res.status(404).json({status: "error 404", error: err.toString()});
                         return console.error(err.toString());
                     }
+                    res.status(200).json({status: "OK"});
+                    cassandra.execute(create_batch("DELETE", question.media));
                 });
-
-                res.status(200).json({status: "OK"});
             });
         }
     });
@@ -187,5 +188,17 @@ router.post('/:id/upvote', function (req, res) {
             user.save(() => question.save(() => res.json({status: "OK"})));
         })
 });
+
+let create_batch = function(statement, ids){
+  let start = "BEGIN BATCH\n";
+  let statements = "";
+
+  ids.forEach(function(id){
+      statements += statement + "FROM media WHERE id=" + id + ";\n";
+  });
+
+  let end = "APPLY BATCH;";
+  return start + statements + end;
+};
 
 module.exports = router;
