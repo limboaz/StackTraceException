@@ -86,8 +86,7 @@ router.post('/:id/accept', function (req, res) {
         Question.findOne({id: q_id}, function (err, question) {
             if (err)
                 return res.status(404).json({status: "error", error: err.toString()});
-            let cur_user = req.session.username;
-            if (question.user.username != cur_user) {
+            if (question.user != req.session.userId) {
                 return res.status(404).json({status: "error", error: "Only user who posted the question can accept the answer."});
             }
             if (question.accepted_answer_id != null) {
