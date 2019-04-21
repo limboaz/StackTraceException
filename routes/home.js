@@ -74,9 +74,8 @@ router.post('/logout', function (req, res) {
 router.post('/search', function (req, res) {
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
-	let accepted = req.body.accepted === true;
 
-	console.log(req.body, accepted, limit, timestamp);
+	console.log(req.body, limit, timestamp);
 	let query;
 
 	// build query
@@ -96,12 +95,20 @@ router.post('/search', function (req, res) {
 		});
 	}		// retrieve the latest ones
 
-	query.sort({timestamp: 'descending'}).limit(limit).populate({
+	if (req.body.sort_by && req.body.sort_by === "timestamp")
+		query.sort({timestamp: 'descending'});
+	else query.sort({score: 'descending'});
+
+	query.limit(limit).populate({
 		// only select the username and reputation
 		path: 'user',
 		select: 'username reputation -_id'
-	}).select('-answers -history -votes -_id -__v'); // don't select the answers property of question
-	if (accepted)
+	});select('-answers -history -votes -_id -__v'); // don't select the answers property of question
+	if (req.body.tags)
+		query.all('tags', req.body.tags);
+	if (req.body.has_media)
+		query.exists('media.0', true);
+	if (req.body.accepted)
 		query.exists('accepted_answer_id', true);
 	// execute query and return result
 	query.exec(function (err, result) {
