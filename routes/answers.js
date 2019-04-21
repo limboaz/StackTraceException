@@ -94,7 +94,7 @@ router.post('/:id/accept', function (req, res) {
             }
             answer.is_accepted = true;
             answer.save();
-            question.accepted_answer_id = answer._id;
+            question.accepted_answer_id = answer.id;
             question.save();
             res.json({status: "OK"});
         });
