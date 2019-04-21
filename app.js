@@ -17,8 +17,8 @@ app.engine('hbs', hbs({extname: 'hbs', layoutsDir: 'public'}));
 app.set('views', 'public');
 app.set('view engine', 'hbs');
 app.use(logger('dev'));
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit:  '50mb', extended: false}));
+app.use(express.json({limit: '200mb'}));
+app.use(express.urlencoded({limit:  '200mb', extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
 	name: 'STE',
