@@ -16,7 +16,6 @@ router.post('/addmedia', upload.single("content"), function (req, res) {
     cassandra.execute(query, params, {prepare: true}, function(err, result){
         if(err)
             return res.status(404).json({status: "error", error: err.toString()});
-        console.log("success!");
         res.json({status: "OK", id: uid});
     });
 });
@@ -26,7 +25,6 @@ router.get('/media/:id', function (req, res) {
     cassandra.execute(query, [req.params.id],function(err, result){
         if(err)
             return res.status(404).json({status: "error", error: err.toString()});
-        console.log(result.rows[0].type.toString());
         res.type(result.rows[0].type).send(result.rows[0].content);
     });
 });

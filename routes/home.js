@@ -17,7 +17,7 @@ router.post('/adduser', function (req, res) {
 	user.enabled = random_key();
 	user.save(function (err, user) {
 		if (err) {
-			console.log(err.toString());
+			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
 		res.json({status:"OK"});
@@ -44,7 +44,7 @@ router.post('/login', function (req, res) {
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
 			res.status(404).json({status: "error", error: err ? err.toString() : "Invalid username or password"});
-			return console.log(err);
+			return console.error(err);
 		}
 		let psid = user.sid;
 		user.sid = req.sessionID;
@@ -52,10 +52,10 @@ router.post('/login', function (req, res) {
 		req.session.username = user.username;
 		if (psid) {
 			mongoStore.get(psid, function (err, session) {
-				if (err) console.log(err);
+				if (err) console.error(err);
 				if (session) req.session.grid = session.grid;
 				user.save(function (err) {
-					if (err) return console.log(err);
+					if (err) return console.error(err);
 					console.log("Now saving session");
 					mongoStore.set(req.sessionID, req.session);
 				});
@@ -128,7 +128,7 @@ function send_email(user) {
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
-		if (error) return console.log(error);
+		if (error) return console.error(error);
 		//console.log('Message %s sent: %s', info.messageId, info.response);
 	});
 }
@@ -140,13 +140,13 @@ function verify_user(em, key, res) {
 			if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
 				users[i].enabled = "True";
 				users[i].save(function (err, user) {
-					if (err) return console.log(err);
+					if (err) return console.error(err);
 					console.log("success validated " + user.username);
 				});
 				return res.json({status: "OK"});
 			}
 		}
-		return res.json({status: "error", error: "Error verifying user"});
+		return res.status(404).json({status: "error", error: "Error verifying user"});
 	});
 }
 
