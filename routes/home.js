@@ -103,7 +103,7 @@ router.post('/search', function (req, res) {
 		// only select the username and reputation
 		path: 'user',
 		select: 'username reputation -_id'
-	});select('-answers -history -votes -_id -__v'); // don't select the answers property of question
+	}).select('-answers -history -votes -_id -__v'); // don't select the answers property of question
 	if (req.body.tags)
 		query.all('tags', req.body.tags);
 	if (req.body.has_media)

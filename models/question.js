@@ -26,8 +26,7 @@ const questionSchema = new Schema({
 	},
 	media: [String],
 	tags: [String],
-	accepted_answer_id: {type: Schema.Types.ObjectId, ref: 'Answer', default: null}
-
+	accepted_answer_id: String,
 });
 
 questionSchema.index({title: 'text', body: 'text'}, {default_language: "none"});
