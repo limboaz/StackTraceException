@@ -19,7 +19,7 @@ router.get('/:username/questions', function(req, res){
 
 		Question.find({user: user._id}, function(err, questions){
 			if (err)
-				return res.json({status : "error", error : err.toString()});
+				return res.status(404).json({status : "error", error : err.toString()});
 
 			let ids = [];
 			questions.forEach((q) => ids.push(q.id));
@@ -35,7 +35,7 @@ router.get('/:username/answers', function(req, res){
 
 		Answer.find({user: req.params.username}, function(err, answers){
 			if (err)
-				return res.json({status : "error", error : err.toString()});
+				return res.status(404).json({status : "error", error : err.toString()});
 
 			let ids = [];
 			answers.forEach((a) => ids.push(a.id));

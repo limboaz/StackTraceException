@@ -27,7 +27,7 @@ router.get('/media/:id', function (req, res) {
         if(err)
             return res.status(404).json({status: "error", error: err.toString()});
         console.log(result.rows[0].type.toString());
-        res.status(result.rows[0].type).send(result.rows[0].content);
+        res.type(result.rows[0].type).send(result.rows[0].content);
     });
 });
 

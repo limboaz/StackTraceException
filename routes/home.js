@@ -106,8 +106,6 @@ router.post('/search', function (req, res) {
 	// execute query and return result
 	query.exec(function (err, result) {
 		if (err) return res.status(404).json({status: "error", error: err.toString()});
-		console.log(result.length);
-		result.forEach((e) => console.log(e.title));
 		res.json({status: "OK", questions: result});
 	});
 });
