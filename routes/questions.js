@@ -82,7 +82,7 @@ router.post('/:id/answers/add', function (req, res) {
 router.get('/:id/answers', function (req, res) {
     Question.findOne({id: req.params.id}).populate({
         path: 'answers',
-        select: '-_id'
+        select: '-_id -is_accepted'
     }).select('answers').exec((err, question) => {
         if (err) {
             res.status(404).json({status: "error", error: err.toString()});

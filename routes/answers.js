@@ -78,24 +78,24 @@ router.post('/:id/upvote', function (req, res) {
 
 router.post('/:id/accept', function (req, res) {
     if (!req.session.userId)
-        return res.json({status: "error", error: "User not logged in."});
+        return res.status(404).json({status: "error", error: "User not logged in."});
     Answer.findOne({id: req.params.id}, function (err, answer) {
-        if (err)
-            return res.json({status: "error", error: err.toString()});
+        if (err || answer.is_accepted)
+            return res.status(404).json({status: "error", error: err ? err.toString() : "Answer already accepted"});
         let q_id = answer.question_id;
         Question.findOne({id: q_id}, function (err, question) {
             if (err)
-                return res.json({status: "error", error: err.toString()});
+                return res.status(404).json({status: "error", error: err.toString()});
             let cur_user = req.session.username;
             if (question.user.username != cur_user) {
-                return res.json({status: "error", error: "Only user who posted the question can accept the answer."});
+                return res.status(404).json({status: "error", error: "Only user who posted the question can accept the answer."});
             }
             if (question.accepted_answer_id != null) {
-                return res.json({status: "error", error: "You already accepted another answer for this question."});
+                return res.status(404).json({status: "error", error: "You already accepted another answer for this question."});
             }
-            answer.is_accepted = true
+            answer.is_accepted = true;
             answer.save();
-            question.accepted_answer_id = answer;
+            question.accepted_answer_id = answer._id;
             question.save();
             res.json({status: "OK"});
         });
