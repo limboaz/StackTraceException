@@ -1,0 +1,33 @@
+---
+- hosts: mongodb
+  remote_user: root
+
+  tasks:
+    - name: Import the public key used by the package management system
+      apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=7F0CEB10 state=present
+
+    - name: Add MongoDB repository
+      apt_repository:
+        repo: deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse
+        state: present
+
+    - name: Install MongoDB
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+        allow_unauthenticated: yes
+      vars:
+        packages:
+          - mongodb-org=4.0.9
+          - mongodb-org-server=4.0.9
+          - mongodb-org-shell=4.0.9
+          - mongodb-org-mongos=4.0.9
+          - mongodb-org-tools=4.0.9
+      notify: start mongodb
+
+  handlers:
+    - name: start mongodb
+      service:
+        name: mongod
+        state: started
+...

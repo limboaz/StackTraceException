@@ -5,7 +5,7 @@ const Mongoose = require('connect-mongo')(session);
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect('mongodb://localhost:27017/STE');
+mongoose.connect('mongodb://10.3.0.249:27017/STE');
 const mongoStore = new Mongoose({mongooseConnection: mongoose.connection});
 
 module.exports = mongoStore;
