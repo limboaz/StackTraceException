@@ -10,9 +10,9 @@
 152.44.40.32 ansible_python_interpreter=/usr/bin/python3
 
 [mongodb]
-152.44.41.135 ansible_python_interpreter=/usr/bin/python3 #10.3.0.249
-209.50.52.120 ansible_python_interpreter=/usr/bin/python3 #10.3.5.242
-209.50.57.67  ansible_python_interpreter=/usr/bin/python3 #10.3.5.243
+152.44.41.135 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-2 ==> config server 10.3.0.249
+209.50.52.120 ansible_python_interpreter=/usr/bin/python3 #shard 1 10.3.5.242
+209.50.57.67  ansible_python_interpreter=/usr/bin/python3 #shard 2 10.3.5.243
 152.44.33.105 ansible_python_interpreter=/usr/bin/python3 #10.3.6.12
 
 [mongos]
