@@ -51,7 +51,10 @@ router.post('/add', function (req, res) {
     let question = new Question(req.body);
     question.user = req.session.userId;
     question.save(function (err, question) {
-        if (err) return res.status(404).json({status: "error", error: err.toString()});
+        if (err) {
+		console.error(err.toString());
+		return res.status(404).json({status: "error", error: err.toString()});
+	}	
         console.log("successfully created questions " + question.title);
         res.json({status: "OK", id: question.id});
     });
