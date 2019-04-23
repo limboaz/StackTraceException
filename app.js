@@ -11,6 +11,7 @@ const indexRouter = require('./routes/index');
 const questionsRouter = require('./routes/questions');
 const answersRouter = require('./routes/answers');
 const mediaRouter = require('./routes/media');
+const resetRouter = require('./routes/reset');
 const app = express();
 
 app.engine('hbs', hbs({extname: 'hbs', layoutsDir: 'public'}));
@@ -32,6 +33,7 @@ app.use(session({
 app.use('/', homeRouter);
 app.use('/', indexRouter);
 app.use('/', mediaRouter);
+app.use('/', resetRouter);
 app.use('/user', userRouter);
 app.use('/questions', questionsRouter);
 app.use('/answers', answersRouter);
