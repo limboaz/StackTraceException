@@ -131,7 +131,7 @@ function send_email(user) {
 		to: user.email,
 		subject: 'Verifying your Tic Tac Toe account',
 		text: 'validation key:<' + user.enabled + '>\n' +
-			'Or click on this link to verify your account http://152.44.36.183/verify?email=' + user.email + "&key=" + user.enabled
+			'Or click on this link to verify your account http://152.44.41.174/verify?email=' + user.email + "&key=" + user.enabled
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
