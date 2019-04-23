@@ -120,7 +120,7 @@ router.post('/search', function (req, res) {
 function send_email(user) {
 	let transporter = nodemailer.createTransport({
 		host: '10.3.5.211',
-		port: 25,
+		port: 80,
 		secure: false,
 		tls: {
 			rejectUnauthorized: false
