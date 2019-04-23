@@ -6,6 +6,8 @@ const mongoStore = require('../mongoose');
 const router = express.Router();
 const __dir = 'public';
 
+const mail = ['localhost', '10.3.5.211'];
+var mail_index = 0;
 
 router.get('/adduser', function (req, res) {
 	res.sendFile('register.html', {root: __dir});
@@ -118,7 +120,7 @@ router.post('/search', function (req, res) {
 
 function send_email(user, res) {
 	let transporter = nodemailer.createTransport({
-		host: '10.3.5.211',
+		host: mail[mail_index],
 		port: 25,
 		secure: false,
 		tls: {
@@ -128,7 +130,7 @@ function send_email(user, res) {
 	let mailOptions = {
 		from: 'mailmaster@StackTraceException.com',
 		to: user.email,
-		subject: 'Verifying your Tic Tac Toe account',
+		subject: 'Verifying your StackTraceException account',
 		text: 'validation key:<' + user.enabled + '>\n' +
 			'Or click on this link to verify your account http://152.44.41.174/verify?email=' + user.email + "&key=" + user.enabled
 	};
@@ -138,6 +140,7 @@ function send_email(user, res) {
 		//console.log('Message %s sent: %s', info.messageId, info.response);
 		res.json({status:"OK"});
 	});
+	mail_index = (mail_index + 1) % 2;
 }
 
 function verify_user(em, key, res) {

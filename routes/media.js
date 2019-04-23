@@ -2,10 +2,13 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const cassandra = require('../cassandra');
+const Media = require('../models/media');
 const shortID = require('shortid');
 let upload = multer();
 
 router.post('/addmedia', upload.single("content"), function (req, res) {
+    if (!req.session.userId)
+        return res.status(404).json({status: "error", error: "User not logged in."});
     let uid = shortID.generate();
     let query = 'INSERT INTO media (id, content, type) VALUES (?, ?, ?)';
     let params = {
@@ -17,6 +20,8 @@ router.post('/addmedia', upload.single("content"), function (req, res) {
         if(err)
             return res.status(404).json({status: "error", error: err.toString()});
         res.json({status: "OK", id: uid});
+        let m = new Media({_id: uid});
+        m.save();
     });
 });
 
