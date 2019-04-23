@@ -69,7 +69,7 @@ router.post('/add', function (req, res) {
 			}
 			console.log("successfully created questions " + question.title);
 			res.json({status: "OK", id: question.id});
-			Media.update({_id: {$in: answer.media}}, {used: true}, function(err, result){});
+			Media.update({_id: {$in: question.media}}, {used: true}, function(err, result){});
 		});
 	});
 });
