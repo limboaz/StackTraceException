@@ -20,7 +20,6 @@ router.post('/adduser', function (req, res) {
 			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
-		res.json({status:"OK"});
 		send_email(user, res);
 	});
 });
@@ -117,7 +116,7 @@ router.post('/search', function (req, res) {
 	});
 });
 
-function send_email(user) {
+function send_email(user, res) {
 	let transporter = nodemailer.createTransport({
 		host: '10.3.5.211',
 		port: 25,
@@ -137,6 +136,7 @@ function send_email(user) {
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) return console.error(error);
 		//console.log('Message %s sent: %s', info.messageId, info.response);
+		res.json({status:"OK"});
 	});
 }
 
