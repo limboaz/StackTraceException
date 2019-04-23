@@ -15,7 +15,7 @@ router.get('/reset', function (req, res) {
 			User.deleteMany({}, function (err, result) {
 				if (err)
 					return res.status(400).json({status: "error", error: "Error removing Mongo Collection: User"});
-				let query = "TRUNCATE ?";
+				let query = "TRUNCATE ?;";
 				cassandra.execute(query, "media", {prepare: true}, function (err, result) {
 					if (err)
 						return res.status(400).json({status: "error", error: "Error truncating cassandra"});
