@@ -51,7 +51,12 @@ router.get('/:id', function (req, res) {
 router.post('/add', function (req, res) {
 	if (!req.session.userId)
 		return res.status(404).json({status: "error", error: "User not logged in."});
-	let question = new Question(req.body);
+	let question = new Question({
+		title: req.body.title,
+		body: req.body.body,
+		tags: req.body.tags,
+		media: req.body.media
+	});
 	question.user = req.session.userId;
 
 	Media.find({_id: {$in: question.media}, used: {$eq: true}}, function (err, media) {
@@ -69,7 +74,8 @@ router.post('/add', function (req, res) {
 			}
 			console.log("successfully created questions " + question.title);
 			res.json({status: "OK", id: question.id});
-			Media.update({_id: {$in: question.media}}, {used: true}, function(err, result){});
+			Media.update({_id: {$in: question.media}}, {used: true}, function (err, result) {
+			});
 		});
 	});
 });
@@ -81,7 +87,7 @@ router.post('/:id/answers/add', function (req, res) {
 	Question.findOne({id: req.params.id}, function (err, question) {
 		if (err)
 			return res.status(404).json({status: "error", error: err.toString()});
-		let answer = new Answer(req.body);
+		let answer = new Answer({body: req.body, media: req.body.media});
 		answer.question_id = question.id;
 		answer.user = req.session.username;
 		Media.find({_id: {$in: answer.media}, used: {$eq: true}}, function (err, media) {
@@ -101,7 +107,8 @@ router.post('/:id/answers/add', function (req, res) {
 				question.save();
 				console.log("Added answer to the question: " + question.id);
 				res.json({status: "OK", id: answer.id, user: answer.user});
-				Media.update({_id: {$in: answer.media}}, {used: true}, function(err, result){})
+				Media.update({_id: {$in: answer.media}}, {used: true}, function (err, result) {
+				})
 			});
 		});
 	});

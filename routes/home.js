@@ -14,8 +14,11 @@ router.get('/adduser', function (req, res) {
 });
 // TODO Separate Email to it's own micro-service
 router.post('/adduser', function (req, res) {
-	let user_req = req.body; // username, password, email
-	let user = new User(user_req);
+	let user = new User({
+		username: req.body.username,
+		email: req.body.email,
+		password: req.body.password
+	});
 	user.enabled = random_key();
 	user.save(function (err, user) {
 		if (err) {
@@ -138,7 +141,7 @@ function send_email(user, res) {
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) return console.error(error);
 		//console.log('Message %s sent: %s', info.messageId, info.response);
-		res.json({status:"OK"});
+		res.json({status: "OK"});
 	});
 	mail_index = (mail_index + 1) % 2;
 }
