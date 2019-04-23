@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const mediaSchema = new Schema({
-	_id: {type: String, unique: true},
+	_id: String,
 	used: {type: Boolean, default: false}
 });
 
