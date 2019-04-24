@@ -20,7 +20,7 @@ router.post('/addmedia', upload.single("content"), function (req, res) {
         if(err)
             return res.status(404).json({status: "error", error: err.toString()});
         res.json({status: "OK", id: uid});
-        let m = new Media({_id: uid});
+        let m = new Media({_id: uid, user: req.session.userId});
         m.save();
     });
 });

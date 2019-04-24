@@ -6,8 +6,6 @@ const cassandra = require('../cassandra');
 const filter = require('../filter');
 const search = require('../binary-search');
 const router = express.Router();
-const multer = require('multer');
-var upload = multer();
 
 let compare = function (a, b) {
 	return a.localeCompare(b)
@@ -59,12 +57,12 @@ router.post('/add', function (req, res) {
 	});
 	question.user = req.session.userId;
 
-	Media.find({_id: {$in: question.media}, used: {$eq: true}}, function (err, media) {
+	Media.find({_id: {$in: question.media}, used: {$eq: false}, user: {$eq: req.session.userId}}, function (err, media) {
 		if (err) {
 			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
-		if (media.length > 0) {
+		if (media.length !== question.media.length) {
 			return res.status(404).json({status: "error", error: "Media already in use"});
 		}
 		question.save(function (err, question) {
