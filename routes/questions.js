@@ -179,7 +179,7 @@ router.post('/:id/upvote', function (req, res) {
 		.exec(function (err, question) {
 			if (err || !question)
 				return res.status(404).json({status: "error"});
-			console.log(upvote, question.score, question.user.username, question.user.reputation, question.user.real_reputation);
+			console.log(upvote, question.score, req.session.username, question.user.reputation, question.user.real_reputation);
 			let index = question.votes.findIndex(function (element) {
 				return element.id === req.session.userId;
 			});
