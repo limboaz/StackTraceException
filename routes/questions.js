@@ -71,7 +71,6 @@ router.post('/add', function (req, res) {
 				console.error(err.toString());
 				return res.status(404).json({status: "error", error: err.toString()});
 			}
-			console.log("successfully created questions " + question.title);
 			res.json({status: "OK", id: question.id});
 			Media.updateMany({_id: {$in: question.media}}, {used: true}, function (err, result) {
 			});
@@ -90,7 +89,7 @@ router.post('/:id/answers/add', function (req, res) {
 			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
-		let answer = new Answer({body: req.body, media: req.body.media});
+		let answer = new Answer({body: req.body.body, media: req.body.media});
 		console.error(req.body);
 		answer.question_id = question.id;
 		answer.user = req.session.username;
@@ -105,7 +104,7 @@ router.post('/:id/answers/add', function (req, res) {
 			}
 			answer.save(function (err, answer) {
 				if (err) {
-					console.log(err.toString());
+					console.error(err.toString());
 					return res.status(404).json({status: "error", error: err.toString()});
 				}
 				console.log("answer generated: id = " + answer.id);
