@@ -89,7 +89,7 @@ router.post('/:id/answers/add', function (req, res) {
 		let answer = new Answer({body: req.body, media: req.body.media});
 		answer.question_id = question.id;
 		answer.user = req.session.username;
-		Media.find({_id: {$in: answer.media}, used: {$eq: true}, user: {$eq, req.session.userId}}, function (err, media) {
+		Media.find({_id: {$in: answer.media}, used: {$eq: true}, user: {$eq: req.session.userId}}, function (err, media) {
 			if (err) {
 				console.error(err.toString());
 				return res.status(404).json({status: "error", error: err.toString()});
