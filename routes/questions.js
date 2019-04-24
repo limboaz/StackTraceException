@@ -82,7 +82,7 @@ router.post('/add', function (req, res) {
 //create new answer
 router.post('/:id/answers/add', function (req, res) {
 	if (!req.session.userId) {
-		console.error("Not logged in");
+		console.error("Add Answer Not logged in");
 		return res.status(404).json({status: "error", error: "User not logged in."});
 	}
 	Question.findOne({id: req.params.id}, function (err, question) {
@@ -137,7 +137,7 @@ router.delete('/:id', function (req, res) {
 	//check if the user is asker.
 	if (!req.session.userId) {
 		res.status(404).json({status: "error 404", error: "User not logged in. "});
-		return console.log("User not logged in when deleting question. ");
+		return console.error("User not logged in when deleting question. ");
 	}
 	Question.findOne({id: req.params.id}, function (err, question) {
 		if (err) {
@@ -146,7 +146,7 @@ router.delete('/:id', function (req, res) {
 		}
 		if (question.user.toString() !== req.session.userId) {
 			res.status(401).json({status: "error 401", error: "You are not authorized to perform this operation."});
-			return console.log("You are not authorized to perform this operation.");
+			return console.error("You are not authorized to perform this operation.");
 		} else {
 			Question.findOneAndRemove({id: req.params.id}, function (err, question) {
 				if (err) {
@@ -168,7 +168,10 @@ router.delete('/:id', function (req, res) {
 });
 
 router.post('/:id/upvote', function (req, res) {
-	if (!req.session.userId) return res.status(404).json({status: "error"});
+	if (!req.session.userId) {
+		console.error("Upvote not logged in");
+		return res.status(404).json({status: "error"});
+	}
 	let upvote = req.body.upvote === undefined ? true : req.body.upvote;
 	upvote = upvote ? 1 : -1;
 
