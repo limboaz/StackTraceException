@@ -153,13 +153,24 @@ router.delete('/:id', function (req, res) {
 					return console.error(err.toString());
 				}
 				//remove the answers associated with it
-				Answer.deleteMany({question_id: question.id}, function (err) {
+				Answer.find({id: {$in : question.answers}}, function (err, answers) {
 					if (err) {
 						res.status(404).json({status: "error 404", error: err.toString()});
 						return console.error(err.toString());
 					}
-					res.status(200).json({status: "OK"});
-					cassandra.execute(create_batch("DELETE", question.media));
+					let media_files = [];
+					answers.forEach((answer) => media_files.push(answer.media));
+					media_files.push(question.media);
+
+					Answer.deleteMany({id: {$in : question.answers}}, function(err){
+						if (err) {
+							res.status(404).json({status: "error 404", error: err.toString()});
+							return console.error(err.toString());
+						}
+						res.status(200).json({status: "OK"});
+					});
+					cassandra.execute(create_batch("DELETE", media_files));
+					Media.deleteMany({id: {$in : media_files}});
 				});
 			});
 		}
@@ -234,7 +245,7 @@ let create_batch = function (statement, ids) {
 	let statements = "";
 
 	ids.forEach(function (id) {
-		statements += statement + "FROM media WHERE id=" + id + ";\n";
+		statements += statement + " FROM media WHERE id=" + id + ";\n";
 	});
 
 	let end = "APPLY BATCH;";
