@@ -159,6 +159,7 @@ function verify_user(em, key, res) {
 				return res.json({status: "OK"});
 			}
 		}
+		console.error("Can't verify:", em, key);
 		return res.status(404).json({status: "error", error: "Error verifying user"});
 	});
 }
