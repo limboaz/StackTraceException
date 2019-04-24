@@ -90,10 +90,9 @@ router.post('/:id/answers/add', function (req, res) {
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
 		let answer = new Answer({body: req.body.body, media: req.body.media});
-		console.error(req.body);
 		answer.question_id = question.id;
 		answer.user = req.session.username;
-		Media.find({_id: {$in: answer.media}, used: {$eq: true}, user: {$eq: req.session.userId}}, function (err, media) {
+		Media.find({_id: {$in: answer.media}, used: {$eq: false}, user: {$eq: req.session.userId}}, function (err, media) {
 			if (err) {
 				console.error(err.toString());
 				return res.status(404).json({status: "error", error: err.toString()});
@@ -107,11 +106,9 @@ router.post('/:id/answers/add', function (req, res) {
 					console.error(err.toString());
 					return res.status(404).json({status: "error", error: err.toString()});
 				}
-				console.log("answer generated: id = " + answer.id);
 				question.answer_count++;
 				question.answers.push(answer);
 				question.save();
-				console.log("Added answer to the question: " + question.id);
 				res.json({status: "OK", id: answer.id, user: answer.user});
 				Media.updateMany({_id: {$in: answer.media}}, {used: true}, function (err, result) {
 				})
