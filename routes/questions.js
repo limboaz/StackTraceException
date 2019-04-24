@@ -87,10 +87,11 @@ router.post('/:id/answers/add', function (req, res) {
 	}
 	Question.findOne({id: req.params.id}, function (err, question) {
 		if (err) {
-			console.error(err.toString())
+			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
 		let answer = new Answer({body: req.body, media: req.body.media});
+		console.error(req.body);
 		answer.question_id = question.id;
 		answer.user = req.session.username;
 		Media.find({_id: {$in: answer.media}, used: {$eq: true}, user: {$eq: req.session.userId}}, function (err, media) {
@@ -103,8 +104,10 @@ router.post('/:id/answers/add', function (req, res) {
 				return res.status(404).json({status: "error", error: "Media already in use"});
 			}
 			answer.save(function (err, answer) {
-				if (err)
+				if (err) {
+					console.log(err.toString());
 					return res.status(404).json({status: "error", error: err.toString()});
+				}
 				console.log("answer generated: id = " + answer.id);
 				question.answer_count++;
 				question.answers.push(answer);
