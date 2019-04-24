@@ -81,11 +81,15 @@ router.post('/add', function (req, res) {
 
 //create new answer
 router.post('/:id/answers/add', function (req, res) {
-	if (!req.session.userId)
+	if (!req.session.userId) {
+		console.error("Not logged in");
 		return res.status(404).json({status: "error", error: "User not logged in."});
+	}
 	Question.findOne({id: req.params.id}, function (err, question) {
-		if (err)
+		if (err) {
+			console.error(err.toString())
 			return res.status(404).json({status: "error", error: err.toString()});
+		}
 		let answer = new Answer({body: req.body, media: req.body.media});
 		answer.question_id = question.id;
 		answer.user = req.session.username;
