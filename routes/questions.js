@@ -185,7 +185,7 @@ router.delete('/:id', function (req, res) {
 					cassandra.execute(create_batch("DELETE", media_files), function (err) {
 						if (err) console.error(err.toString());
 					});
-					Media.deleteMany({id: {$in: media_files}}, function (err) {
+					Media.deleteMany({_id: {$in: media_files}}, function (err) {
 						if (err) console.error(err.toString());
 					});
 				});
@@ -262,7 +262,7 @@ let create_batch = function (statement, ids) {
 	let statements = "";
 
 	ids.forEach(function (id) {
-		statements += statement + " FROM media WHERE id=" + id + ";\n";
+		statements += statement + " FROM media WHERE id='" + id + "';\n";
 	});
 
 	let end = "APPLY BATCH;";
