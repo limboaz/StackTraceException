@@ -29,7 +29,7 @@ router.get('/media/:id', function (req, res) {
 	let query = 'SELECT content, type FROM media WHERE id = ?';
 	cassandra.execute(query, [req.params.id], function (err, result) {
 		if (err || !result || result.rows.length === 0)
-			return res.status(404).json({status: "error", error: err.toString()});
+			return res.status(404).json({status: "error", error: err ? err.toString() : "Media not found"});
 		res.type(result.rows[0].type).send(result.rows[0].content);
 	});
 });
