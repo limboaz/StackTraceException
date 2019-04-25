@@ -161,7 +161,7 @@ router.delete('/:id', function (req, res) {
 					return console.error(err.toString());
 				}
 				//remove the answers associated with it
-				Answer.find({_id: {$in: question.answers}}, function (err, answers) {
+				Answer.find({question_id: question.id}, function (err, answers) {
 					if (err) {
 						res.status(404).json({status: "error 404", error: err.toString()});
 						return console.error(err.toString());
@@ -174,7 +174,7 @@ router.delete('/:id', function (req, res) {
 					});
 					media_files = media_files.concat(question.media);
 
-					Answer.deleteMany({_id: {$in: question.answers}}, function (err) {
+					Answer.deleteMany({question_id: question.id}, function (err) {
 						if (err) {
 							res.status(404).json({status: "error 404", error: err.toString()});
 							return console.error(err.toString());
