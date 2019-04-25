@@ -177,7 +177,10 @@ router.delete('/:id', function (req, res) {
 						}
 						res.status(200).json({status: "OK"});
 					});
-					cassandra.execute(create_batch("DELETE", media_files));
+					console.error(media_files);
+					cassandra.execute(create_batch("DELETE", media_files), function (err) {
+						if (err) console.error(err.toString());
+					});
 					Media.deleteMany({id: {$in: media_files}}, function (err) {
 						if (err) console.log(err.toString());
 					});

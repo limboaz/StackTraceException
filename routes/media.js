@@ -27,10 +27,14 @@ router.post('/addmedia', upload.single("content"), function (req, res) {
 
 router.get('/media/:id', function (req, res) {
     let query = 'SELECT content, type FROM media WHERE id = ?';
-    cassandra.execute(query, [req.params.id],function(err, result){
-        if(err || !result)
-            return res.status(404).json({status: "error", error: err.toString()});
-        res.type(result.rows[0].type).send(result.rows[0].content);
+    Media.find({id: req.params.id}, function (err, media) {
+        if (err || !media)
+            return res.status(404).json({status: "error", error: err ? err.toString() : "media does not exist"});
+        cassandra.execute(query, [req.params.id],function(err, result){
+            if(err || !result)
+                return res.status(404).json({status: "error", error: err.toString()});
+            res.type(result.rows[0].type).send(result.rows[0].content);
+        });
     });
 });
 
