@@ -169,10 +169,10 @@ router.delete('/:id', function (req, res) {
 					let media_files = [];
 					console.error(question.media);
 					answers.forEach(function (answer) {
-						media_files.concat(answer.media);
+						media_files = media_files.concat(answer.media);
 						console.error(answer.media);
 					});
-					media_files.concat(question.media);
+					media_files = media_files.concat(question.media);
 
 					Answer.deleteMany({id: {$in: question.answers}}, function (err) {
 						if (err) {
@@ -186,7 +186,7 @@ router.delete('/:id', function (req, res) {
 						if (err) console.error(err.toString());
 					});
 					Media.deleteMany({id: {$in: media_files}}, function (err) {
-						if (err) console.log(err.toString());
+						if (err) console.error(err.toString());
 					});
 				});
 			});
