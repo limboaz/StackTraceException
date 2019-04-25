@@ -167,7 +167,11 @@ router.delete('/:id', function (req, res) {
 						return console.error(err.toString());
 					}
 					let media_files = [];
-					answers.forEach((answer) => media_files.concat(answer.media));
+					console.error(question.media);
+					answers.forEach(function (answer) {
+						media_files.concat(answer.media);
+						console.error(answer.media);
+					});
 					media_files.concat(question.media);
 
 					Answer.deleteMany({id: {$in: question.answers}}, function (err) {
