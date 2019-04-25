@@ -89,9 +89,9 @@ router.post('/:id/answers/add', function (req, res) {
 		return res.status(404).json({status: "error", error: "User not logged in."});
 	}
 	Question.findOne({id: req.params.id}, function (err, question) {
-		if (err) {
-			console.error(err.toString());
-			return res.status(404).json({status: "error", error: err.toString()});
+		if (err || !question) {
+			console.error(err);
+			return res.status(404).json({status: "error", error: err ? err.toString() : "Question not found"});
 		}
 		let answer = new Answer({body: req.body.body, media: req.body.media});
 		answer.question_id = question.id;
