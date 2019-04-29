@@ -3,7 +3,7 @@ const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
-	id: {type: String, index: true, default: shortid.generate},
+	id: {type: String, index: 'hashed', default: shortid.generate},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',

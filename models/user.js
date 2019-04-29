@@ -6,7 +6,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 const userSchema = new mongoose.Schema({
 	username: {
 		type: String,
-		index: {unique: true},
+		index: {type: 'hashed', unique: true},
 		required: [true, "User name can't be blank"],
 	},
 	password: {
