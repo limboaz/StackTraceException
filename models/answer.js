@@ -15,7 +15,7 @@ const answerSchema = new Schema({
         default: () => Math.floor(Date.now() / 1000)
     },
     media: [String]
-});
+}, {shardKey: {id: "hashed"}});
 
 
 module.exports = mongoose.model('Answer', answerSchema);

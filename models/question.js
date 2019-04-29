@@ -27,7 +27,7 @@ const questionSchema = new Schema({
 	media: [String],
 	tags: [String],
 	accepted_answer_id: String,
-});
+}, {shardKey: {id: "hashed"}});
 
 questionSchema.index({title: 'text', body: 'text'}, {default_language: "none"});
 

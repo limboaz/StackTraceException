@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
 		match: [/\S+@\S+\.\S+/, 'Email you entered is invalid, please use proper format example@somewhere.com ']
 	},
 	enabled: {type: String, default: "False"},
-});
+}, {shardKey: {username: "hashed"}});
 
 
 userSchema.plugin(uniqueValidator);
