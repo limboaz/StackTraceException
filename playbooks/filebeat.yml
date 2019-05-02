@@ -1,0 +1,33 @@
+---
+- hosts: frontends,loadbalancer
+  remote_user: root
+
+  tasks:
+    - name: Import the public key used by the package management system
+      apt_key:
+       url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+       state: present
+
+    - name: Install http-transport in case not installed
+      apt:
+        name: apt-transport-https
+        allow_unauthenticated: yes
+
+    - name: Add Elastic repository
+      apt_repository:
+        repo: deb https://artifacts.elastic.co/packages/6.x/apt stable main
+        state: present
+
+    - name: Install Filebeat
+      apt:
+        name: filebeat
+        update_cache: yes
+        allow_unauthenticated: yes
+      notify: start filebeat
+
+  handlers:
+    - name: start filebeat
+      service:
+        name: filebeat
+        state: started
+...

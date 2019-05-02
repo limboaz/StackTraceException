@@ -1,0 +1,15 @@
+---
+- hosts: frontends
+  remote_user: root
+
+  tasks:
+    - name: install pm2-elasticlogs
+      shell: pm2 install pm2-elasticlogs
+
+    - name: connect to the logger
+      shell: pm2 set pm2-elasticlogs:elasticsearch_host 'http://mojo-logger:9200'
+
+    - name: set app name
+      shell: pm2 set pm2-elasticlogs:www all
+
+...
