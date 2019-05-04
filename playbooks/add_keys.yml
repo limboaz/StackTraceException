@@ -1,0 +1,9 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  tasks:
+    - name: add ssh keys
+      authorized_key: key="{{lookup('file', item)}}" user=ubuntu state=present
+      with_fileglob:
+        - ~/StackTraceException/playbooks/keys/*.pub
+...

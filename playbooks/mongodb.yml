@@ -1,6 +1,7 @@
 ---
 - hosts: mongodb
-  remote_user: root
+  remote_user: ubuntu
+  become: yes
 
   tasks:
     - name: Import the public key used by the package management system

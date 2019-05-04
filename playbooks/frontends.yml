@@ -1,6 +1,6 @@
 ---
 - hosts: frontends
-  remote_user: root
+  remote_user: ubuntu
 
   tasks:
     - name: ensure node is installed
@@ -8,10 +8,14 @@
       register: result
       ignore_errors: True
 
-    - name: install nodejs
+    - name: add nodejs repo
       shell: curl -sL https://deb.nodesource.com/setup_11.x | bash -
-      notify: nodejs installation
       when: result.rc == 1
+
+    - name: install nodejs
+      apt:
+        name: nodejs
+        state: present	
 
     - name: install pm2
       npm:
@@ -32,14 +36,9 @@
       shell: cd ~/StackTraceException && npm install
 
   handlers:
-    - name: nodejs installation
-      apt:
-        name: nodejs
-        state: present
-
     - name: start pm2
-      shell: pm2 start
+      shell: pm2 start && pm2 install pm2-logrotate && pm2 set pm2-logrotate:compress true
 
     - name: restart project
-      shell: cd ~/StackTraceException && pm2 start bin/www
+      shell: cd ~/StackTraceException && pm2 restart www
 ...
