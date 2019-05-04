@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
 
 
-// TODO Make emails unique, for some reason it is possible to have two users with the same email
 const userSchema = new mongoose.Schema({
 	username: {
 		type: String,
