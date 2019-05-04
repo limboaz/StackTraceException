@@ -6,6 +6,7 @@ const Media = require('../models/media');
 const shortID = require('shortid');
 let upload = multer();
 
+// DONE!
 router.post('/addmedia', upload.single("content"), function (req, res) {
 	if (!req.session.userId)
 		return res.status(404).json({status: "error", error: "User not logged in."});
