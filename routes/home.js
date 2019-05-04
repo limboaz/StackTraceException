@@ -6,7 +6,7 @@ const mongoStore = require('../mongoose');
 const router = express.Router();
 const __dir = 'public';
 
-const mail = ['localhost', '10.3.5.211'];
+const mail = ['localhost', '192.168.122.36'];
 var mail_index = 0;
 
 router.get('/adduser', function (req, res) {
