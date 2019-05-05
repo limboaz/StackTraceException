@@ -25,6 +25,7 @@ router.post('/adduser', function (req, res) {
 			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
+		res.json({status: "OK"});
 		send_email(user, res);
 	});
 });
@@ -79,7 +80,6 @@ router.post('/search', function (req, res) {
 	let timestamp = req.body.timestamp ? req.body.timestamp : Date.now() / 1000;
 	let limit = req.body.limit && req.body.limit <= 100 ? req.body.limit : 25;
 
-	console.log(req.body, limit, timestamp);
 	let query;
 
 	// build query
@@ -141,7 +141,6 @@ function send_email(user, res) {
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) return console.error(error);
 		//console.log('Message %s sent: %s', info.messageId, info.response);
-		res.json({status: "OK"});
 	});
 	mail_index = (mail_index + 1) % 2;
 }
