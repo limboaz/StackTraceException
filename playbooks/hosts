@@ -15,5 +15,8 @@
 192.168.122.34 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-2 ==> config server 10.3.5.242
 192.168.122.35 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-4 10.3.6.12
 
+[bigmongo]
+130.245.168.203 ansible_python_interpreter=/usr/bin/python3
+
 [mongos]
 192.168.122.36 ansible_python_interpreter=/usr/bin/python3 #10.3.5.211
