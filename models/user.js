@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const shortid = require('shortid');
 var uniqueValidator = require('mongoose-unique-validator');
 
 
-// TODO Make emails unique, for some reason it is possible to have two users with the same email
 const userSchema = new mongoose.Schema({
+	id: {type: String, index: 'hashed', default: shortid.generate},
 	username: {
 		type: String,
 		index: {unique: true},
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
 		match: [/\S+@\S+\.\S+/, 'Email you entered is invalid, please use proper format example@somewhere.com ']
 	},
 	enabled: {type: String, default: "False"},
-}, {shardKey: {username: 1}});
+}, {shardKey: {id: "hashed"}});
 
 
 userSchema.plugin(uniqueValidator);

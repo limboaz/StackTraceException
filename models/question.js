@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const shortid = require('shortid');
 const Schema = mongoose.Schema;
 
+//DONE
 const questionSchema = new Schema({
 	id: {type: String, index: 'hashed', default: shortid.generate},
 	user: {
