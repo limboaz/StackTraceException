@@ -5,7 +5,7 @@ const Mongoose = require('connect-mongo')(session);
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect('mongodb://130.245.168.203:27017/STE', function (err) {
+mongoose.connect('mongodb://130.245.170.215:27017/STE', function (err) {
     if (err) {
         console.error(err.toString());
         process.exit(1);
