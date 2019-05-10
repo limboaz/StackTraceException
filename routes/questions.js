@@ -131,8 +131,9 @@ router.get('/:id/answers', function (req, res) {
 		select: '-_id -is_accepted'
 	}).select('answers').exec((err, question) => {
 		if (err || !question) {
-			res.status(404).json({status: "error", error: err ? err.toString() : "Question not found"});
-			return console.error(err.toString());
+			let val = err ? err.toString() : "Question not found";
+			res.status(404).json({status: "error", error: val});
+			return console.error(val);
 		}
 		// console.log("Populated answers + answers);
 		res.json({status: 'OK', answers: question.answers});
@@ -147,9 +148,10 @@ router.delete('/:id', function (req, res) {
 		return console.error("User not logged in when deleting question. ");
 	}
 	Question.findOne({id: req.params.id}, function (err, question) {
-		if (err) {
-			res.status(400).json({status: "error 400", error: err.toString()});
-			return console.error(err.toString());
+		if (err || !question) {
+			let val = err ? err.toString() : "Question not found";
+			res.status(400).json({status: "error 400", error: val});
+			return console.error(val);
 		}
 		if (question.user.toString() !== req.session.userId) {
 			res.status(401).json({status: "error 401", error: "You are not authorized to perform this operation."});
