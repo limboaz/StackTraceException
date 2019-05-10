@@ -49,7 +49,7 @@ router.post('/login', function (req, res) {
 	User.findOne({username: name, password: pass}, function (err, user) {
 		if (err || !user || user.enabled !== "True") {
 			res.status(404).json({status: "error", error: err ? err.toString() : "Invalid username or password"});
-			return console.error(err);
+			return console.error(err ? err.toString() : !user ? "User not found" : user.toString() + ": User not enabled");
 		}
 		let psid = user.sid;
 		user.sid = req.sessionID;
