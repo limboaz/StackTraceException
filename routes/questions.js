@@ -130,8 +130,8 @@ router.get('/:id/answers', function (req, res) {
 		path: 'answers',
 		select: '-_id -is_accepted'
 	}).select('answers').exec((err, question) => {
-		if (err) {
-			res.status(404).json({status: "error", error: err.toString()});
+		if (err || !question) {
+			res.status(404).json({status: "error", error: err ? err.toString() : "Question not found"});
 			return console.error(err.toString());
 		}
 		// console.log("Populated answers + answers);
@@ -167,10 +167,8 @@ router.delete('/:id', function (req, res) {
 						return console.error(err.toString());
 					}
 					let media_files = [];
-					console.error(question.media);
 					answers.forEach(function (answer) {
 						media_files = media_files.concat(answer.media);
-						console.error(answer.media);
 					});
 					media_files = media_files.concat(question.media);
 
@@ -179,14 +177,13 @@ router.delete('/:id', function (req, res) {
 							res.status(404).json({status: "error 404", error: err.toString()});
 							return console.error(err.toString());
 						}
-						res.status(200).json({status: "OK"});
 					});
-					console.error(media_files);
 					cassandra.execute(create_batch("DELETE", media_files), function (err) {
 						if (err) console.error(err.toString());
 					});
 					Media.deleteMany({_id: {$in: media_files}}, function (err) {
 						if (err) console.error(err.toString());
+						res.status(200).json({status: "OK"});
 					});
 				});
 			});

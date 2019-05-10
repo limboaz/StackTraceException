@@ -81,8 +81,9 @@ router.post('/:id/accept', function (req, res) {
     if (!req.session.userId)
         return res.status(404).json({status: "error", error: "User not logged in."});
     Answer.findOne({id: req.params.id}, function (err, answer) {
-        if (err || answer.is_accepted)
-            return res.status(404).json({status: "error", error: err ? err.toString() : "Answer already accepted"});
+        if (err || !answer || answer.is_accepted)
+            return res.status(404).json({status: "error", error: err ? err.toString() : !answer ? "Answer not found"
+                    :"Answer already accepted"});
         let q_id = answer.question_id;
         Question.findOne({id: q_id}, function (err, question) {
             if (err)
