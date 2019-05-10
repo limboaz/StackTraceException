@@ -151,15 +151,14 @@ function verify_user(em, key, res) {
             return res.status(404).json({status: "error", error: "Error verifying user"});
         }
         if (user.enabled !== 'True' && (key === 'abracadabra' || user.enabled === key)) {
-            user.enabled = "True";
-            user.save(function (err, user) {
+            User.update({_id: user._id, enabled: "True"}, function (err, user) {
                 if (err) {
                     console.error(err);
                     return res.status(404).json({status: "error", error: "Error verifying user"});
                 }
                 console.log("success validated " + user.username);
+                return res.json({status: "OK"});
             });
-			return res.json({status: "OK"});
 		}
 	});
 }
