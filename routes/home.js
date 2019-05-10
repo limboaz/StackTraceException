@@ -146,20 +146,22 @@ function send_email(user, res) {
 }
 
 function verify_user(em, key, res) {
-	User.find({email: em}, function (err, users) {
-		if (err) return console.error(err);
-		for (let i = 0; i < users.length; i++) {
-			if (users[i].enabled !== 'True' && (key === 'abracadabra' || users[i].enabled === key)) {
-				users[i].enabled = "True";
-				users[i].save(function (err, user) {
-					if (err) return console.error(err);
-					console.log("success validated " + user.username);
-					return res.json({status: "OK"});
-				});
-			}
-		}
-		console.error("Can't verify:", em, key);
-		return res.status(404).json({status: "error", error: "Error verifying user"});
+	User.findOne({email: em}, function (err, user) {
+		if (err || !user) {
+            console.error(err ? err.toString() : "Can't verify:", em, key);
+            return res.status(404).json({status: "error", error: "Error verifying user"});
+        }
+        if (user.enabled !== 'True' && (key === 'abracadabra' || user.enabled === key)) {
+            user.enabled = "True";
+            user.save(function (err, user) {
+                if (err) {
+                    console.error(err);
+                    return res.status(404).json({status: "error", error: "Error verifying user"});
+                }
+                console.log("success validated " + user.username);
+                return res.json({status: "OK"});
+            });
+        }
 	});
 }
 
