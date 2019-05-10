@@ -70,12 +70,12 @@ router.post('/add', function (req, res) {
 			console.error("Invalid media:", question.media);
 			return res.status(404).json({status: "error", error: "Media already in use"});
 		}
+		res.json({status: "OK", id: question.id});
 		question.save(function (err, question) {
 			if (err) {
 				console.error(err.toString());
 				return res.status(404).json({status: "error", error: err.toString()});
 			}
-			res.json({status: "OK", id: question.id});
 			Media.updateMany({_id: {$in: question.media}}, {used: true}, function (err, result) {
 			});
 		});
