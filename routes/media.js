@@ -17,6 +17,7 @@ router.post('/addmedia', upload.single("content"), function (req, res) {
 		content: req.file.buffer,
 		type: req.file.mimetype
 	};
+	console.error(req.file.mimetype);
 	cassandra.execute(query, params, {prepare: true}, function (err, result) {
 		if (err)
 			return res.status(404).json({status: "error", error: err.toString()});
