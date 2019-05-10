@@ -6,6 +6,7 @@ const Question = require('../models/question');
 const User = require('../models/user');
 const Media = require('../models/media');
 
+/*
 router.get('/reset', function (req, res) {
 	Answer.deleteMany({}, function (err, result) {
 		if (err)
@@ -29,5 +30,5 @@ router.get('/reset', function (req, res) {
 		});
 	});
 });
-
+*/
 module.exports = router;
