@@ -91,7 +91,6 @@ router.post('/:id/accept', function (req, res) {
             if (question.user.toString() !== req.session.userId) {
                 return res.status(404).json({status: "error", error: "Only user who posted the question can accept the answer."});
             }
-            console.error("Accept answer:", req.params.id, question.accepted_answer_id);
             if (question.accepted_answer_id) {
                 return res.status(404).json({status: "error", error: "You already accepted another answer for this question."});
             }

@@ -6,8 +6,8 @@ const Question = require('../models/question');
 const User = require('../models/user');
 const Media = require('../models/media');
 
-/*
-router.get('/reset', function (req, res) {
+
+router.get('/reset_null', function (req, res) {
 	Answer.deleteMany({}, function (err, result) {
 		if (err)
 			return res.status(400).json({status: "error", error: "Error removing Mongo Collection: Answer"});
@@ -30,5 +30,5 @@ router.get('/reset', function (req, res) {
 		});
 	});
 });
-*/
+
 module.exports = router;

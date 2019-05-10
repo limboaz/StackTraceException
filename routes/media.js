@@ -17,16 +17,12 @@ router.post('/addmedia', upload.single("content"), function (req, res) {
         content: req.file.buffer,
         type: req.file.mimetype
     };
-    console.error(req.file.mimetype, uid);
     cassandra.execute(query, params, {prepare: true}, function (err, result) {
         if (err)
             return res.status(404).json({status: "error", error: err.toString()});
         res.json({status: "OK", id: uid});
         let m = new Media({_id: uid, user: req.session.userId});
-        m.save(function (err, media) {
-            if (err) console.error(err.toString());
-            else console.error("mongo saved",media._id);
-        });
+        m.save();
     });
 });
 

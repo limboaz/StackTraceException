@@ -14,13 +14,12 @@ router.get('/adduser', function (req, res) {
 });
 // TODO Separate Email to it's own micro-service
 router.post('/adduser', function (req, res) {
-	let user = new User({
+	User.create({
 		username: req.body.username,
 		email: req.body.email,
-		password: req.body.password
-	});
-	user.enabled = random_key();
-	user.save(function (err, user) {
+		password: req.body.password,
+		enabled: random_key()
+	}, function (err, user) {
 		if (err) {
 			console.error(err.toString());
 			return res.status(404).json({status: "error", error: err.toString()});
@@ -55,6 +54,7 @@ router.post('/login', function (req, res) {
 		user.sid = req.sessionID;
 		req.session.userId = user._id;
 		req.session.username = user.username;
+		res.json({status: "OK"});
 		if (psid) {
 			mongoStore.get(psid, function (err, session) {
 				if (err) console.error(err);
@@ -66,7 +66,6 @@ router.post('/login', function (req, res) {
 				});
 			});
 		}
-		res.json({status: "OK"});
 	});
 });
 
@@ -159,9 +158,9 @@ function verify_user(em, key, res) {
                     return res.status(404).json({status: "error", error: "Error verifying user"});
                 }
                 console.log("success validated " + user.username);
-                return res.json({status: "OK"});
             });
-        }
+			return res.json({status: "OK"});
+		}
 	});
 }
 

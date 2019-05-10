@@ -71,7 +71,6 @@ router.post('/add', function (req, res) {
 			return res.status(404).json({status: "error", error: "Media already in use"});
 		}
 		res.json({status: "OK", id: question.id});
-		console.error("Media Used:", question.media);
 		question.save(function (err, question) {
 			if (err) {
 				console.error(err.toString());
