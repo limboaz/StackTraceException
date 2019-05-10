@@ -151,7 +151,7 @@ function verify_user(em, key, res) {
             return res.status(404).json({status: "error", error: "Error verifying user"});
         }
         if (user.enabled !== 'True' && (key === 'abracadabra' || user.enabled === key)) {
-            User.update({}, {$set: {enabled: "True"}}, function (err, user) {
+            User.updateOne({_id: user._id}, {$set: {enabled: "True"}}, function (err, user) {
                 if (err) {
                     console.error(err);
                     return res.status(404).json({status: "error", error: "Error verifying user"});
