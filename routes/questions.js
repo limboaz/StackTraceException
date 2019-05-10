@@ -91,8 +91,9 @@ router.post('/:id/answers/add', function (req, res) {
 	}
 	Question.findOne({id: req.params.id}, function (err, question) {
 		if (err || !question) {
-			console.error(err);
-			return res.status(404).json({status: "error", error: err ? err.toString() : "Question not found"});
+			let val = err ? err.toString() : "Question not found";
+			console.error(val);
+			return res.status(404).json({status: "error", error: val});
 		}
 		let answer = new Answer({body: req.body.body, media: req.body.media});
 		answer.question_id = question.id;
