@@ -154,8 +154,8 @@ function verify_user(em, key, res) {
 				users[i].save(function (err, user) {
 					if (err) return console.error(err);
 					console.log("success validated " + user.username);
+					return res.json({status: "OK"});
 				});
-				return res.json({status: "OK"});
 			}
 		}
 		console.error("Can't verify:", em, key);
