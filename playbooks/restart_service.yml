@@ -3,6 +3,6 @@
   remote_user: ubuntu
 
   tasks:
-    - name: restart service
-      shell: pm2 flush && pm2 restart www
+    - name: start service
+      shell: pm2 flush && pm2 reload www
 ...

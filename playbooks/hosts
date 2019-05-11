@@ -2,6 +2,9 @@
 192.168.122.29 ansible_python_interpreter=/usr/bin/python3
 192.168.122.28 ansible_python_interpreter=/usr/bin/python3
 192.168.122.30 ansible_python_interpreter=/usr/bin/python3
+192.168.122.41 ansible_python_interpreter=/usr/bin/python3
+130.245.170.225 ansible_python_interpreter=/usr/bin/python3
+130.245.168.207 ansible_python_interpreter=/usr/bin/python3
 
 [loadbalancer]
 192.168.122.37 ansible_python_interpreter=/usr/bin/python3
@@ -11,12 +14,9 @@
 192.168.122.32 ansible_python_interpreter=/usr/bin/python3
 
 [mongodb]
-192.168.122.33 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-1 shard 1 10.3.0.249
-192.168.122.34 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-2 ==> config server 10.3.5.242
-192.168.122.35 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-4 10.3.6.12
-
-[bigmongo]
-130.245.170.215 ansible_python_interpreter=/usr/bin/python3
+130.245.170.215 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-1
+130.245.170.224 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-2
+192.168.122.42 ansible_python_interpreter=/usr/bin/python3 #mojo-mongo-config
 
 [mongos]
 192.168.122.36 ansible_python_interpreter=/usr/bin/python3 #10.3.5.211

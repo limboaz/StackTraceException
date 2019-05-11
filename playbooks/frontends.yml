@@ -9,6 +9,7 @@
       ignore_errors: True
 
     - name: add nodejs repo
+      become: yes
       shell: curl -sL https://deb.nodesource.com/setup_11.x | bash -
       when: result.rc == 1
 
@@ -16,6 +17,7 @@
       apt:
         name: nodejs
         state: present	
+      become: yes
 
     - name: install pm2
       npm:
@@ -23,6 +25,7 @@
         version: '3.4.0'
         global: yes
       notify: start pm2
+      become: yes
 
     - name: clone project
       git:
@@ -40,5 +43,5 @@
       shell: pm2 start && pm2 install pm2-logrotate && pm2 set pm2-logrotate:compress true
 
     - name: restart project
-      shell: cd ~/StackTraceException && pm2 restart www
+      shell: cd ~/StackTraceException && pm2 flush && pm2 restart www
 ...
