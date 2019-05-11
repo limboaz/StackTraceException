@@ -81,7 +81,6 @@ router.post('/search', function (req, res) {
 
 	let query;
 
-	return res.json({status: "OK", questions: []});
 	// build query
 	if (req.body.q) {
 		query = Question.find({
