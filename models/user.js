@@ -4,6 +4,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 
 const userSchema = new mongoose.Schema({
+	id: {type: String, index: 'hashed', default: shortid.generate},
 	username: {
 		type: String,
 		index: {unique: true},
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
 		match: [/\S+@\S+\.\S+/, 'Email you entered is invalid, please use proper format example@somewhere.com ']
 	},
 	enabled: {type: String, default: "False"},
-});
+}, {shardKey: {id: "hashed"}});
 
 
 userSchema.plugin(uniqueValidator);
