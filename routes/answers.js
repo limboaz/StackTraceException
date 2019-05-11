@@ -27,7 +27,6 @@ router.post('/:id/upvote', function (req, res) {
         User.findOne({username: answer.user}, function (err, user) {
             if (err || !user)
                 return res.status(404).json({status: "error"});
-            console.log(upvote, answer.score, req.session.username, user.reputation, user.real_reputation);
             let index = answer.votes.findIndex(function (element) {
                 return element.id === req.session.userId;
             });

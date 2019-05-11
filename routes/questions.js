@@ -67,7 +67,6 @@ router.post('/add', function (req, res) {
 			return res.status(404).json({status: "error", error: err.toString()});
 		}
 		if (media.length !== question.media.length) {
-			console.error("Invalid media:", question.media);
 			return res.status(404).json({status: "error", error: "Media already in use"});
 		}
 		res.json({status: "OK", id: question.id});
@@ -107,7 +106,6 @@ router.post('/:id/answers/add', function (req, res) {
 				return res.status(404).json({status: "error", error: err.toString()});
 			}
 			if (media.length !== answer.media.length) {
-				console.error("Invalid media:", answer.media);
 				return res.status(404).json({status: "error", error: "Media already in use"});
 			}
 			answer.save(function (err, answer) {
@@ -207,7 +205,6 @@ router.post('/:id/upvote', function (req, res) {
 		.exec(function (err, question) {
 			if (err || !question)
 				return res.status(404).json({status: "error"});
-			console.log(upvote, question.score, req.session.username, question.user.reputation, question.user.real_reputation);
 			let index = question.votes.findIndex(function (element) {
 				return element.id === req.session.userId;
 			});
